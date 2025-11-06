@@ -38,7 +38,7 @@ int rowCharToIndex(char c) {
 }
 
 void getUserInput(){
-    Serial.println("Entrer votre mouvement:");
+    Serial.print("Entrer votre mouvement: ");
     
     String input = "";
     while (input.length() < 5) {

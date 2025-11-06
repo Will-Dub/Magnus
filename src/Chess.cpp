@@ -93,6 +93,7 @@ namespace CHESS
     }
 
     void printBoard() {
+        Serial.println();
         for (int r = 0; r < 8; ++r) {
             Serial.print(r + 1);
             Serial.print(" ");
@@ -163,7 +164,8 @@ namespace CHESS
 
     void printCurrentPlayer(){
         Serial.print("Au tour de: ");
-        Serial.println(currentTurnPlayer == Player::WHITE ? "Blanc" : "Noir");
+        Serial.println(currentTurnPlayer == Player::WHITE ? "\033[37mBlanc" : "\033[30mNoir");
+        Serial.print("\033[0m");
     }
 
     void printError(Erreur erreur){
