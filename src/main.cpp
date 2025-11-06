@@ -15,6 +15,7 @@ void setup() {
 
 void loop() {
     CHESS::printBoard();
+    CHESS::printCurrentPlayer();
     getUserInput();
 }
 
@@ -37,7 +38,6 @@ int rowCharToIndex(char c) {
 }
 
 void getUserInput(){
-    CHESS::printCurrentPlayer();
     Serial.println("Entrer votre mouvement:");
     
     String input = "";
@@ -63,7 +63,6 @@ void getUserInput(){
     CHESS::MovePieceResult result = CHESS::movePiece(fromCol, fromRow, toCol, toRow);
 
     if(!result.isSuccess){
-        CHESS::printCurrentPlayer();
         CHESS::printError(result.erreur);
         getUserInput();
         return;

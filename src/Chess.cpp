@@ -89,7 +89,6 @@ namespace CHESS
     }
 
     bool isInsideBoard(int row, int col) {
-        // Row et col entre 1-8 inclusivement
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
@@ -163,17 +162,8 @@ namespace CHESS
     }
 
     void printCurrentPlayer(){
-        switch (currentTurnPlayer) {
-            case Player::WHITE:
-                Serial.println("Blanc: ");
-                break;
-            case Player::BLACK:
-                Serial.println("Noir: ");
-                break;
-            default:
-                Serial.println(" ");
-                break;
-        }
+        Serial.print("Au tour de: ");
+        Serial.println(currentTurnPlayer == Player::WHITE ? "Blanc" : "Noir");
     }
 
     void printError(Erreur erreur){

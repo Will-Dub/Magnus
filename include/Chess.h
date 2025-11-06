@@ -31,8 +31,6 @@ namespace CHESS{
     // La colonne est une lettre entre A-H et row entre 1-8
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow);
     void setupBoard();
-    int rowCharToIndex(int value);
-    int colCharToIndex(char col);
     bool isInsideBoard(int row, int col);
     void printBoard();
     void printPiece(int col, int row);
