@@ -44,14 +44,18 @@ void getUserInput(){
     while (input.length() < 5) {
         if (Serial.available() > 0) {
             char c = Serial.read();
+            if (c == 'R' || c == 'r') {
+                CHESS::setupBoard();
+                return;
+            }
             if (c != '\n' && c != '\r') input += c;
         }
     }
 
     int fromCol = colCharToIndex(input[0]);
     int fromRow = rowCharToIndex(input[1]);
-    int toCol   = colCharToIndex(input[3]);
-    int toRow   = rowCharToIndex(input[4]);
+    int toCol = colCharToIndex(input[3]);
+    int toRow = rowCharToIndex(input[4]);
 
     // Check
     if (fromCol == -1 || fromRow == -1 || toCol == -1 || toRow == -1) {

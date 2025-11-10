@@ -124,7 +124,7 @@ namespace CHESS
             break;
         
         case Player::BLACK:
-            Serial.print("\033[30m");
+            Serial.print("\033[33m");
             break;
         
         default:
@@ -164,7 +164,7 @@ namespace CHESS
 
     void printCurrentPlayer(){
         Serial.print("Au tour de: ");
-        Serial.println(currentTurnPlayer == Player::WHITE ? "\033[37mBlanc" : "\033[30mNoir");
+        Serial.println(currentTurnPlayer == Player::WHITE ? "\033[37mBlanc" : "\033[33mNoir");
         Serial.print("\033[0m");
     }
 
