@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <LibRobus.h>
 #include "Chess.h"
+#include "Lcd.h"
 
 void getUserInput();
 
@@ -11,6 +12,7 @@ void setup() {
     //BoardInit();
     Serial.begin(115200);
     CHESS::setupBoard();
+    LCD::initLcd();
 }
 
 void loop() {
@@ -22,19 +24,6 @@ void loop() {
 char readCharFromSerial() {
     while (Serial.available() == 0) {}
     return Serial.read();
-}
-
-// A-H -> 0-7
-int colCharToIndex(char c) {
-  if (c >= 'A' && c <= 'H') return c - 'A';
-  if (c >= 'a' && c <= 'h') return c - 'a';
-  return -1;
-}
-
-// 1-8 -> 0-7
-int rowCharToIndex(char c) {
-  if (c >= '1' && c <= '8') return c - '1';
-  return -1;
 }
 
 void getUserInput(){
@@ -52,10 +41,10 @@ void getUserInput(){
         }
     }
 
-    int fromCol = colCharToIndex(input[0]);
-    int fromRow = rowCharToIndex(input[1]);
-    int toCol = colCharToIndex(input[3]);
-    int toRow = rowCharToIndex(input[4]);
+    int fromCol = CHESS::colCharToIndex(input[0]);
+    int fromRow = CHESS::rowCharToIndex(input[1]);
+    int toCol = CHESS::colCharToIndex(input[3]);
+    int toRow = CHESS::rowCharToIndex(input[4]);
 
     // Check
     if (fromCol == -1 || fromRow == -1 || toCol == -1 || toRow == -1) {

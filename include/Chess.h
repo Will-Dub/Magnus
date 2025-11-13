@@ -37,4 +37,6 @@ namespace CHESS{
     void printCurrentPlayer();
     void printError(Erreur erreur);
     void switchTurn();
+    int colCharToIndex(char c);
+    int rowCharToIndex(char c);
 }

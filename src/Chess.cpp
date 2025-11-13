@@ -195,4 +195,17 @@ namespace CHESS
             currentTurnPlayer = Player::WHITE;
         }
     }
+
+    // A-H -> 0-7
+    int colCharToIndex(char c) {
+        if (c >= 'A' && c <= 'H') return c - 'A';
+        if (c >= 'a' && c <= 'h') return c - 'a';
+        return -1;
+    }
+
+    // 1-8 -> 0-7
+    int rowCharToIndex(char c) {
+        if (c >= '1' && c <= '8') return c - '1';
+        return -1;
+    }
 }
