@@ -47,6 +47,9 @@ namespace CHESS
 
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow){
         MovePieceResult result {};
+        Serial.print("Mouvement entré: ");
+        Serial.print(String(fromCol) + String(fromRow) + " à " + String(toCol) + String(toRow));
+        Serial.print("\033[0m");
 
         // Check si les position sont dans le range 0-8
         if(!isInsideBoard(fromRow, fromCol) || !isInsideBoard(toRow, toCol)){
