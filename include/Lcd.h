@@ -9,5 +9,4 @@ namespace LCD{
     void initLcd();
     void print(String text, int line = 0);
     void clear();
-    
 }

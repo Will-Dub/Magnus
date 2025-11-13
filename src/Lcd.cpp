@@ -18,4 +18,8 @@ namespace LCD
 
         lcd.print(text);
     }
+
+    void clear(){
+        lcd.clear();
+    }
 }

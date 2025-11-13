@@ -14,6 +14,7 @@ void setup() {
     //BoardInit();
     Serial.begin(115200);
     CHESS::setupBoard();
+    MENU::init();
     LCD::initLcd();
 }
 
@@ -29,6 +30,7 @@ void loop() {
 
     if(moveInput.giveUp){
         isGameStarted = false;
+        MENU::waitForLoseAck();
         return;
     }
 

@@ -7,45 +7,50 @@ namespace MENU {
     int selectedToRow = 1;
     int currentHorizontalIndex = 0;
     int currentVerticalIndex = 0;
-    bool isOkPressed = false;
+    bool isOkPressedFlag = false;
+    bool isRightPressedFlag = false;
+    bool isUpPressedFlag = false;
 
     const int BLINK_TIME_MS = 500;
     unsigned long lastBlinkTime = 0;
     bool blinkState = true;
 
-    bool waitForGameStart() {
+    void init(){
+        pinMode(PIN_OK_BUTTON, INPUT);
+    }
+
+    void waitForGameStart() {
         // Dialogue: Commencer
-        resetMenuIndex();
+        reset();
         LCD::print("Commencer");
-        LCD::print("      [OK]      ", 1);
 
-        while (!isOkPressed) {
+        while (!isOkPressedFlag) {
+            blinkLine("      [OK]      ");
             tick();
         }
+    }
 
-        // Dialogue: Choix couleur
-        resetMenuIndex();
-        LCD::print("Choix couleur");
+    void waitForLoseAck(){
+        // Dialogue: Perdu
+        reset();
+        LCD::print("Perdu :(");
 
-        while (!isOkPressed) {
-            blinkWord("[BLANC]   [NOIR]", 0, 6, 10, 15);
+        while (!isOkPressedFlag) {
+            blinkLine("      [OK]      ");
             tick();
         }
-
-        bool isPlayerWhite = currentHorizontalIndex % 2;
-        return isPlayerWhite;
     }
 
     MoveInput getUserMove(bool isPreviousMoveInvalid){
         // Dialogue: Début de tour
-        resetMenuIndex();
+        reset();
         if(!isPreviousMoveInvalid){
             LCD::print("A votre tour");   
         }else{
             LCD::print("Coup invalide");
         }
 
-        while (!isOkPressed) {
+        while (!isOkPressedFlag) {
             blinkWord("[OK]  [Renoncer]", 0, 3, 6, 15);
             tick();
         }
@@ -58,13 +63,25 @@ namespace MENU {
         }
 
         // Dialogue: De
-        resetMenuIndex();
+        reset();
         LCD::print("De:");
         int colIndex = 0;
         int rowIndex = 0;
+        bool isCurrentlyOnCol = true;
 
-        while(!isOkPressed){
-            // Met à jour col ou row
+        while(!isOkPressedFlag){
+            // Change d'index
+            if(isCurrentlyOnCol && currentHorizontalIndex % 2 == 1){
+                // Change de col à row
+                currentVerticalIndex = rowIndex;
+                isCurrentlyOnCol = false;
+            }else if(!isCurrentlyOnCol && currentHorizontalIndex % 2 == 0){
+                // Change de row à col
+                currentVerticalIndex = colIndex;
+                isCurrentlyOnCol = true;
+            }
+
+            // Met à jour l'index
             if (currentHorizontalIndex % 2 == 0){
                 colIndex = currentVerticalIndex % 8;
             }
@@ -75,15 +92,28 @@ namespace MENU {
             selectedFromColChar = 'A' + colIndex;
             selectedFromRow = rowIndex + 1;
 
-            blinkChar(String(selectedFromColChar) + String(selectedFromRow));
+            //blinkChar(String(selectedFromColChar) + String(selectedFromRow));
+            String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
+            blinkWord(text, 1, 1, 4, 4);
             tick();
         }
 
         // Dialogue: À
-        resetMenuIndex();
+        reset();
         LCD::print("A:");
 
-        while(!isOkPressed){
+        while(!isOkPressedFlag){
+            // Change d'index
+            if(isCurrentlyOnCol && currentHorizontalIndex % 2 == 1){
+                // Change de col à row
+                currentVerticalIndex = rowIndex;
+                isCurrentlyOnCol = false;
+            }else if(!isCurrentlyOnCol && currentHorizontalIndex % 2 == 0){
+                // Change de row à col
+                currentVerticalIndex = colIndex;
+                isCurrentlyOnCol = true;
+            }
+
             // Met à jour col ou row
             if (currentHorizontalIndex % 2 == 0){
                 colIndex = currentVerticalIndex % 8;
@@ -94,15 +124,17 @@ namespace MENU {
 
             selectedToColChar = 'A' + colIndex;
             selectedToRow = rowIndex + 1;
-            blinkChar(String(selectedToColChar) + String(selectedToRow));
+            //blinkChar(String(selectedToColChar) + String(selectedToRow));
+            String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
+            blinkWord(text, 1, 1, 4, 4);
             tick();
         }
 
         // Dialogue: Confirmation
-        resetMenuIndex();
+        reset();
         LCD::print("Confirmer?");
 
-        while(!isOkPressed){
+        while(!isOkPressedFlag){
             blinkWord("[OUI]      [NON]", 0, 4, 11, 15);
             tick();
         }
@@ -160,35 +192,140 @@ namespace MENU {
         LCD::print(text, 1);
     }
 
-    void resetMenuIndex(){
+    void resetBlink(){
+        blinkState = true;
+        lastBlinkTime = millis();
+    }
+
+    void blinkLine(String text) {
+        unsigned long now = millis();
+
+        if (now - lastBlinkTime > BLINK_TIME_MS) {
+            blinkState = !blinkState;
+            lastBlinkTime = now;
+        }
+
+        if (!blinkState) {
+            LCD::print("                ", 1);
+            return;
+        }
+
+        LCD::print(text, 1);
+    }
+
+    void reset(){
         currentHorizontalIndex = 0;
         currentVerticalIndex = 0;
-        isOkPressed = false;
+        isOkPressedFlag = false;
+        LCD::clear();
     }
 
     void tick(){
-        /*if(isRightPressed){
-            currentHorizontalIndex++;
-            return;
+        static bool isOkPressed = false;
+        static unsigned long startOkButtonPress = 0;
+        static bool isUpPressed = false;
+        static unsigned long startUpButtonPress = 0;
+        static bool isDownPressed = false;
+        static unsigned long startDownButtonPress = 0;
+        static bool isRightPressed = false;
+        static unsigned long startRightButtonPress = 0;
+        static bool isLeftPressed = false;
+        static unsigned long startLeftButtonPress = 0;
+        unsigned long currentTime = millis();
+
+        bool okButtonPressed = digitalRead(PIN_OK_BUTTON);
+
+        if(okButtonPressed){
+            if(startOkButtonPress == 0){
+                isOkPressed = false;
+                startOkButtonPress = currentTime;
+            }
+            else if (currentTime - startOkButtonPress >= BUTTON_PRESS_TIME_MS) {
+                if(!isOkPressed){
+                    isOkPressedFlag = true;
+                    isOkPressed = true;
+                }
+            }
+        }else{
+            isOkPressedFlag = false;
+            isOkPressed = false;
+            startOkButtonPress = 0;
         }
 
-        if(isLeftPressed){
-            currentHorizontalIndex--;
-            return;
+        bool upButtonPressed = digitalRead(PIN_UP_BUTTON);
+
+        if(upButtonPressed){
+            if(startUpButtonPress == 0){
+                isUpPressed = false;
+                startUpButtonPress = currentTime;
+            }
+            else if (currentTime - startUpButtonPress >= BUTTON_PRESS_TIME_MS) {
+                if(!isUpPressed){
+                    currentVerticalIndex++;
+                    isUpPressed = true;
+                    resetBlink();
+                }
+            }
+        }else{
+            isUpPressed = false;
+            startUpButtonPress = 0;
         }
 
-        if(isUpPressed){
-            currentVerticalIndex++;
-        }
+        /*bool downButtonPressed = digitalRead(PIN_DOWN_BUTTON);
 
-        if(isDownPressed){
-            currentVerticalIndex--;
-        }
-            
-        if(isOkPressed){
-            isOkPressed = true
+        if(downButtonPressed){
+            if(startDownButtonPress == 0){
+                isDownPressed = false;
+                startDownButtonPress = currentTime;
+            }
+            else if (currentTime - startDownButtonPress >= BUTTON_PRESS_TIME_MS) {
+                if(!isDownPressed){
+                    currentVerticalIndex--;
+                    isDownPressed = true;
+                }
+            }
+        }else{
+            isDownPressed = false;
+            startDownButtonPress = 0;
         }*/
 
-        delay(100);
+        bool rightButtonPressed = digitalRead(PIN_RIGHT_BUTTON);
+
+        if(rightButtonPressed){
+            if(startRightButtonPress == 0){
+                isRightPressed = false;
+                startRightButtonPress = currentTime;
+            }
+            else if (currentTime - startRightButtonPress >= BUTTON_PRESS_TIME_MS) {
+                if(!isRightPressed){
+                    currentHorizontalIndex++;
+                    isRightPressed = true;
+                    resetBlink();
+                }
+            }
+        }else{
+            isRightPressed = false;
+            startRightButtonPress = 0;
+        }
+
+        /*bool leftButtonPressed = digitalRead(PIN_LEFT_BUTTON);
+
+        if(leftButtonPressed){
+            if(startLeftButtonPress == 0){
+                isLeftPressed = false;
+                startLeftButtonPress = currentTime;
+            }
+            else if (currentTime - startLeftButtonPress >= BUTTON_PRESS_TIME_MS) {
+                if(!isLeftPressed){
+                    currentHorizontalIndex++;
+                    isLeftPressed = true;
+                }
+            }
+        }else{
+            isLeftPressed = false;
+            startLeftButtonPress = 0;
+        }*/
+
+        delay(30);
     }
 }
