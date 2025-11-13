@@ -17,6 +17,8 @@ namespace MENU {
 
     void init(){
         pinMode(PIN_OK_BUTTON, INPUT);
+        pinMode(PIN_UP_BUTTON, INPUT);
+        pinMode(PIN_RIGHT_BUTTON, INPUT);
     }
 
     void waitForGameStart() {
