@@ -168,23 +168,18 @@ namespace CHESS
         Serial.print("\033[0m");
     }
 
-    void printError(Erreur erreur){
+    String getErrorMessage(Erreur erreur){
         switch (erreur) {
             case Erreur::OUTSIDE_BOARD:
-                Serial.println("Mouvement en dehors de la planche");
-                break;
+                return "Mouvement en dehors de la planche";
             case Erreur::NO_PIECE:
-                Serial.println("Il n'y a aucune pièce à cet endroit");
-                break;
+                return "Il n'y a aucune pièce à cet endroit";
             case Erreur::OTHER_PLAYER_PIECE:
-                Serial.println("Le pion ne vous appartient pas");
-                break;
+                return "Le pion ne vous appartient pas";
             case Erreur::EATING_OWN_PIECE:
-                Serial.println("Vous ne pouvez pas manger votre propre pion");
-                break;
+                return "Vous ne pouvez pas manger votre propre pion";
             default:
-                Serial.println("Erreur inconnue");
-                break;
+                return "Erreur inconnue";
         }
     }
 
@@ -200,12 +195,6 @@ namespace CHESS
     int colCharToIndex(char c) {
         if (c >= 'A' && c <= 'H') return c - 'A';
         if (c >= 'a' && c <= 'h') return c - 'a';
-        return -1;
-    }
-
-    // 1-8 -> 0-7
-    int rowCharToIndex(char c) {
-        if (c >= '1' && c <= '8') return c - '1';
         return -1;
     }
 }

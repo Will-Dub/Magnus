@@ -35,8 +35,7 @@ namespace CHESS{
     void printBoard();
     void printPiece(int col, int row);
     void printCurrentPlayer();
-    void printError(Erreur erreur);
+    String getErrorMessage(Erreur erreur);
     void switchTurn();
     int colCharToIndex(char c);
-    int rowCharToIndex(char c);
 }

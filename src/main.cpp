@@ -4,6 +4,17 @@
 #include "Lcd.h"
 
 void getUserInput();
+void printNextMove();
+
+char selectedFromColChar = 'A';
+int selectedFromRow = 1;
+char selectedToColChar = 'A';
+int selectedToRow = 1;
+int currentIndex = 0;
+
+const int BLINK_TIME_MS = 500;
+unsigned long lastBlinkTime = 0;
+bool blinkState = true;
 
 //-----------------------------
 // MAIN CODE.
@@ -21,42 +32,88 @@ void loop() {
     getUserInput();
 }
 
-char readCharFromSerial() {
-    while (Serial.available() == 0) {}
-    return Serial.read();
-}
+void printNextMove() {
+    unsigned long now = millis();
 
-void getUserInput(){
-    Serial.print("Entrer votre mouvement: ");
-    
-    String input = "";
-    while (input.length() < 5) {
-        if (Serial.available() > 0) {
-            char c = Serial.read();
-            if (c == 'R' || c == 'r') {
-                CHESS::setupBoard();
-                return;
-            }
-            if (c != '\n' && c != '\r') input += c;
+    if (now - lastBlinkTime > BLINK_TIME_MS) {
+        blinkState = !blinkState;
+        lastBlinkTime = now;
+    }
+
+    String from = String(selectedFromColChar) + String(selectedFromRow);
+    String to = String(selectedToColChar) + String(selectedToRow);
+    String displayText = from + " a " + to;
+
+    if (!blinkState) {
+        switch (currentIndex) {
+            case 0: displayText.setCharAt(0, ' '); break;
+            case 1: displayText.setCharAt(1, ' '); break;
+            case 2: displayText.setCharAt(5, ' '); break;
+            case 3: displayText.setCharAt(6, ' '); break;
         }
     }
 
-    int fromCol = CHESS::colCharToIndex(input[0]);
-    int fromRow = CHESS::rowCharToIndex(input[1]);
-    int toCol = CHESS::colCharToIndex(input[3]);
-    int toRow = CHESS::rowCharToIndex(input[4]);
+    LCD::print(displayText, 1);
+}
 
-    // Check
-    if (fromCol == -1 || fromRow == -1 || toCol == -1 || toRow == -1) {
-        Serial.println("Entrée invalide, veuillez réessayer.");
-        getUserInput();
-        return;
+void getUserInput(){
+    LCD::print("Entrer votre mouvement: ");
+
+    while(currentIndex <= 3){
+        printNextMove();
+        /*if(rightPressed){
+            currentIndex++;
+            return;
+        }
+
+        if(leftPressed){
+            currentIndex--;
+            return;
+        }
+
+        if(upPressed){
+            switch(currentIndex){
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        if(downPressed){
+            switch(currentIndex){
+                case 0:
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+        }
+        }*/
+
+        delay(100);
     }
 
-    CHESS::MovePieceResult result = CHESS::movePiece(fromCol, fromRow, toCol, toRow);
+    int selectedFromCol = CHESS::colCharToIndex(selectedFromColChar);
+    int selectedToCol = CHESS::colCharToIndex(selectedToColChar);
+
+    CHESS::MovePieceResult result = CHESS::movePiece(selectedFromCol, selectedFromRow-1, selectedToCol, selectedToRow-1);
 
     if(!result.isSuccess){
-        CHESS::printError(result.erreur);
+        String errorMessage = CHESS::getErrorMessage(result.erreur);
+        LCD::print(errorMessage, 1);
+        delay(2000);
         getUserInput();
         return;
     }
