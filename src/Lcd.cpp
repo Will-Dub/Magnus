@@ -173,21 +173,6 @@ namespace LCD
         int mapY = mapYTable[row];
         indexToChangePixel1 = mapPosToIndex[mapY][mapXPixel1];
         indexToChangePixel2 = mapPosToIndex[mapY][mapXPixel2];
-
-        Serial.print("Pixel 1 screen: ");
-        Serial.print(mapXPixel1);
-        Serial.print(":");
-        Serial.print(mapY);
-
-        Serial.print("  pixel 2 screen: ");
-        Serial.print(mapXPixel2);
-        Serial.print(":");
-        Serial.println(mapY);
-
-        Serial.print("Index to change pixel 1: ");
-        Serial.println(indexToChangePixel1);
-        Serial.print("Index to change pixel 2: ");
-        Serial.println(indexToChangePixel2);
         
         copyMap(mapXPixel1, mapY, initial1);
         copyMap(mapXPixel1, mapY, inverse1);
