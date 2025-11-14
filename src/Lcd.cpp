@@ -101,14 +101,6 @@ namespace LCD
 
     void initLcd(){
         lcd.begin(16, 2);
-        lcd.createChar(0, topLeft);
-        lcd.createChar(1, topMiddleLeft);
-        lcd.createChar(2, topMiddleRight);
-        lcd.createChar(3, topRight);
-        lcd.createChar(4, bottomLeft);
-        lcd.createChar(5, bottomMiddleLeft);
-        lcd.createChar(6, bottomMiddleRight);
-        lcd.createChar(7, bottomRight);
     }
 
     /**
@@ -165,6 +157,15 @@ namespace LCD
     }
 
     void blinkChessBoard(int col, int row){
+        lcd.createChar(0, topLeft);
+        lcd.createChar(1, topMiddleLeft);
+        lcd.createChar(2, topMiddleRight);
+        lcd.createChar(3, topRight);
+        lcd.createChar(4, bottomLeft);
+        lcd.createChar(5, bottomMiddleLeft);
+        lcd.createChar(6, bottomMiddleRight);
+        lcd.createChar(7, bottomRight);
+
         // Col entre 0-7, row entre 0-7
         // 0 = left, 1 = middle left, 2 = middle right, 3 = right 
         int mapXPixel1 = mapXPixel1Table[col];

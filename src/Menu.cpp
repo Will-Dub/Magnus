@@ -114,6 +114,8 @@ namespace MENU {
         // Dialogue: À
         reset();
         LCD::print("A:");
+        colIndex = 0;
+        rowIndex = 0;
         LCD::blinkChessBoard(colIndex, rowIndex);
 
         while(!isOkPressedFlag){
@@ -138,7 +140,7 @@ namespace MENU {
 
             // Met à jour le chess board
             if(oldColIndex != colIndex || oldRowIndex != rowIndex){
-                LCD::blinkChessBoard(oldColIndex, oldRowIndex);
+                LCD::blinkChessBoard(colIndex, rowIndex);
                 oldColIndex = colIndex;
                 oldRowIndex = rowIndex;
             }
@@ -146,7 +148,7 @@ namespace MENU {
             selectedToColChar = 'A' + colIndex;
             selectedToRow = rowIndex + 1;
             //blinkChar(String(selectedToColChar) + String(selectedToRow));
-            String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
+            String text = "["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
             blinkWord(text, 1, 1, 4, 4);
             tick();
             LCD::tickBlinkChessBoard();
@@ -247,12 +249,12 @@ namespace MENU {
         static unsigned long startOkButtonPress = 0;
         static bool isUpPressed = false;
         static unsigned long startUpButtonPress = 0;
-        static bool isDownPressed = false;
-        static unsigned long startDownButtonPress = 0;
+        //static bool isDownPressed = false;
+        //static unsigned long startDownButtonPress = 0;
         static bool isRightPressed = false;
         static unsigned long startRightButtonPress = 0;
-        static bool isLeftPressed = false;
-        static unsigned long startLeftButtonPress = 0;
+        //static bool isLeftPressed = false;
+        //static unsigned long startLeftButtonPress = 0;
         unsigned long currentTime = millis();
 
         bool okButtonPressed = digitalRead(PIN_OK_BUTTON);
