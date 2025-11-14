@@ -69,7 +69,10 @@ namespace MENU {
         LCD::print("De:");
         int colIndex = 0;
         int rowIndex = 0;
+        int oldColIndex = 0;
+        int oldRowIndex = 0;
         bool isCurrentlyOnCol = true;
+        LCD::blinkChessBoard(colIndex, rowIndex);
 
         while(!isOkPressedFlag){
             // Change d'index
@@ -91,6 +94,13 @@ namespace MENU {
                 rowIndex = currentVerticalIndex % 8;
             }
 
+            // Met à jour le chess board
+            if(oldColIndex != colIndex || oldRowIndex != rowIndex){
+                LCD::blinkChessBoard(colIndex, rowIndex);
+                oldColIndex = colIndex;
+                oldRowIndex = rowIndex;
+            }
+
             selectedFromColChar = 'A' + colIndex;
             selectedFromRow = rowIndex + 1;
 
@@ -98,11 +108,13 @@ namespace MENU {
             String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
             blinkWord(text, 1, 1, 4, 4);
             tick();
+            LCD::tickBlinkChessBoard();
         }
 
         // Dialogue: À
         reset();
         LCD::print("A:");
+        LCD::blinkChessBoard(colIndex, rowIndex);
 
         while(!isOkPressedFlag){
             // Change d'index
@@ -124,12 +136,20 @@ namespace MENU {
                 rowIndex = currentVerticalIndex % 8;
             }
 
+            // Met à jour le chess board
+            if(oldColIndex != colIndex || oldRowIndex != rowIndex){
+                LCD::blinkChessBoard(oldColIndex, oldRowIndex);
+                oldColIndex = colIndex;
+                oldRowIndex = rowIndex;
+            }
+
             selectedToColChar = 'A' + colIndex;
             selectedToRow = rowIndex + 1;
             //blinkChar(String(selectedToColChar) + String(selectedToRow));
             String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
             blinkWord(text, 1, 1, 4, 4);
             tick();
+            LCD::tickBlinkChessBoard();
         }
 
         // Dialogue: Confirmation
