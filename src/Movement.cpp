@@ -1,65 +1,96 @@
 #include "Movement.h"
+#include <math.h>   // fabsf, powf
 
 namespace MOVEMENT {
+    // ===== ÉTATS & PARAMS =====
     MoveEnum currentMove = MoveEnum::NONE;
-    float goalDistance = 0;
+    float goalDistance = 0.0f;  // cm
     int maxSpeed = 0;
     int minSpeed = 0;
     LineOffsetEnum offsetMode = LineOffsetEnum::AUCUN;
 
+    // Snapshots encodeurs au début d’un virage (cm)
+    static float baseRight = 0.0f;
+    static float baseLeft  = 0.0f;
+    // ===== INIT =====
     void init(){
         WHEEL_PID::init();
         WHEEL_PID::setPIDDesiredPulse(0, 0);
     }
 
-    void moveForward(float pDistance, int pMinSpeed, int pMaxSpeed) {
-        moveForwardNonBlocking(pDistance, pMinSpeed, pMaxSpeed);
+    // ===== API bloquante =====
+    void moveForward(float distance_cm, int pMinSpeed, int pMaxSpeed) {
+        moveForwardNonBlocking(distance_cm, pMinSpeed, pMaxSpeed);
         waitEndMove();
     }
 
-    void moveForwardNonBlocking(float pDistance, int pMinSpeed, int pMaxSpeed) {
+    void turnRight(float angle_deg, int pMinSpeed, int pMaxSpeed) {
+        turnRightNonBlocking(angle_deg, pMinSpeed, pMaxSpeed);
+        waitEndMove();
+    }
+
+    void turnRightUntilLine(int pMinSpeed,
+                              int pMaxSpeed){
+        turnRightNonBlocking(360, pMinSpeed, pMaxSpeed);
+        waitUntilLine();
+    }
+
+    void turnLeft(float angle_deg, int pMinSpeed, int pMaxSpeed) {
+        turnLeftNonBlocking(angle_deg, pMinSpeed, pMaxSpeed);
+        waitEndMove();
+    }
+
+     void turnLeftUntilLine(int pMinSpeed,
+                              int pMaxSpeed){
+        turnLeftNonBlocking(360, pMinSpeed, pMaxSpeed);
+        waitUntilLine();
+    }
+
+    void moveUntilLine(int pMinSpeed, int pMaxSpeed)
+    {
+        moveForwardNonBlocking(99999, pMinSpeed, pMaxSpeed);
+        waitUntilLine();
+    }
+
+    // ===== API non-bloquante =====
+    void moveForwardNonBlocking(float distance_cm, int pMinSpeed, int pMaxSpeed) {
         WHEEL_PID::resetCoveredDistance();
         currentMove = MoveEnum::FORWARD;
         offsetMode = LineOffsetEnum::AUCUN;
-        goalDistance = pDistance;
+        goalDistance = distance_cm;   // cm
         minSpeed = pMinSpeed;
         maxSpeed = pMaxSpeed;
     }
 
-    void turnRight(float pAngle, int pMinSpeed, int pMaxSpeed) {
-        turnRightNonBlocking(pAngle, pMinSpeed, pMaxSpeed);
-        waitEndMove();
-    }
-
-    void turnRightNonBlocking(float pAngle, int pMinSpeed, int pMaxSpeed) {
+    void turnRightNonBlocking(float angle_deg, int pMinSpeed, int pMaxSpeed) {
         WHEEL_PID::resetCoveredDistance();
         currentMove = MoveEnum::TURN_RIGHT;
-        goalDistance = angleToDistance(pAngle);
+        goalDistance = angleToDistance(angle_deg);        // cm
         minSpeed = pMinSpeed;
         maxSpeed = pMaxSpeed;
+        offsetMode = LineOffsetEnum::AUCUN;
     }
 
-    void turnLeft(float pAngle, int pMinSpeed, int pMaxSpeed) {
-        turnLeftNonBlocking(pAngle, pMinSpeed, pMaxSpeed);
-        waitEndMove();
-    }
-
-    void turnLeftNonBlocking(float pAngle, int pMinSpeed, int pMaxSpeed) {
+    void turnLeftNonBlocking(float angle_deg, int pMinSpeed, int pMaxSpeed) {
         WHEEL_PID::resetCoveredDistance();
         currentMove = MoveEnum::TURN_LEFT;
-        goalDistance = angleToDistance(pAngle);
+        goalDistance = angleToDistance(angle_deg);        // cm
         minSpeed = pMinSpeed;
         maxSpeed = pMaxSpeed;
+        offsetMode = LineOffsetEnum::AUCUN;
     }
 
-    float angleToDistance(float angle){
-        return angle*DEG_TO_RAD*RAYON;
+    // ===== Conversions unités (cm / degrés) =====
+    float angleToDistance(float angle_deg){
+        // RAYON en m => *100 pour cm
+        return angle_deg * DEG_TO_RAD * (RAYON * 100.0f);
     }
 
-    float distanceToAngle(float distance){
-        return distance/(DEG_TO_RAD*RAYON);
+    float distanceToAngle(float distance_cm){
+        return distance_cm / (DEG_TO_RAD * (RAYON * 100.0f));
     }
 
+    // ===== Attente bloquante =====
     void waitEndMove(){
         while(currentMove != MoveEnum::NONE){
             runMovementController();
@@ -67,114 +98,133 @@ namespace MOVEMENT {
         }
     }
 
+    void waitUntilLine(){
+        int linePoolCount = 0;
+        while(currentMove != MoveEnum::NONE){
+            runMovementController();
+            delay(1);
+
+            if(ucReadLineSensors() != 0){
+                linePoolCount++;
+                if(linePoolCount >= 3) stop();
+            }
+        }
+    }
+
+    // ===== Stop =====
     void stop(){
         WHEEL_PID::setPIDDesiredPulse(0, 0);
         WHEEL_PID::reset();
         currentMove = MoveEnum::NONE;
+        goalDistance = 0.0f;
         WHEEL_PID::stopMotor();
     }
 
-    float computeScaledSpeed(float remainingDistance, float totalDistance,
-                         float accelDistance,
-                         float minSpeed, float maxSpeed) {
-        if (remainingDistance <= 0) return 0;
+    static float computeScaledSpeed(float remainingDistance, float totalDistance,
+                                float accelDistance,
+                                float minS, float maxS) {
+        if (remainingDistance <= 0.0f) return 0.0f;
 
         float coveredDistance = totalDistance - remainingDistance;
+
+        accelDistance = fminf(accelDistance, 0.5f * totalDistance);
 
         float accelFactor = constrain(coveredDistance / accelDistance, 0.0f, 1.0f);
         float decelFactor = constrain(remainingDistance / accelDistance, 0.0f, 1.0f);
 
-        float accelSmooth = pow(accelFactor, 2.0f);
-        float decelSmooth = pow(decelFactor, 2.0f);
+        float speedFactor = 4.0f * accelFactor * decelFactor;
+        speedFactor = constrain(speedFactor, 0.0f, 1.0f);
 
-        float speedFactor = min(accelSmooth, decelSmooth);
-
-        return minSpeed + (maxSpeed - minSpeed) * speedFactor;
+        return minS + (maxS - minS) * speedFactor;
     }
 
+    // ===== Contrôleur principal =====
     void runMovementController(){
         switch(currentMove){
             case MoveEnum::TURN_RIGHT: {
-                float coveredDistance = WHEEL_PID::getRightCoveredDistance();
+                //  moyenne des 2 roues 
+                float dr = fabsf(WHEEL_PID::getRightCoveredDistance() - baseRight);
+                float dl = fabsf(WHEEL_PID::getLeftCoveredDistance()  - baseLeft);
+                float coveredDistance = 0.5f * (dr + dl);        // cm
                 float remainingDistance = goalDistance - coveredDistance;
+
                 if (remainingDistance <= STOP_TOLERANCE) {
                     stop();
                 } else {
                     float speed = computeScaledSpeed(
-                        remainingDistance,
-                        goalDistance,
-                        ACCEL_TURN_DISTANCE,
-                        minSpeed,
-                        maxSpeed
+                        remainingDistance, goalDistance, ACCEL_TURN_DISTANCE, minSpeed, maxSpeed
                     );
-                    WHEEL_PID::setPIDDesiredPulse(speed, -speed);
+                    WHEEL_PID::setPIDDesiredPulse(
+                        speed,   // gauche +
+                        -speed  // droite -
+                    );
                 }
                 break;
             }
+
             case MoveEnum::TURN_LEFT: {
-                float coveredDistance = WHEEL_PID::getRightCoveredDistance();
+                float dr = fabsf(WHEEL_PID::getRightCoveredDistance() - baseRight);
+                float dl = fabsf(WHEEL_PID::getLeftCoveredDistance()  - baseLeft);
+                float coveredDistance = 0.5f * (dr + dl);        // cm
                 float remainingDistance = goalDistance - coveredDistance;
+
                 if (remainingDistance <= STOP_TOLERANCE) {
                     stop();
                 } else {
                     float speed = computeScaledSpeed(
-                        remainingDistance,
-                        goalDistance,
-                        ACCEL_TURN_DISTANCE,
-                        minSpeed,
-                        maxSpeed
+                        remainingDistance, goalDistance, ACCEL_TURN_DISTANCE, minSpeed, maxSpeed
                     );
-                    WHEEL_PID::setPIDDesiredPulse(-speed, speed);
+                    WHEEL_PID::setPIDDesiredPulse(
+                        -speed, // gauche -
+                        speed    // droite +
+                    );
                 }
                 break;
             }
+
             case MoveEnum::FORWARD: {
-                float remainingDistance = goalDistance - WHEEL_PID::getCoveredDistance();
+                float remainingDistance = goalDistance - WHEEL_PID::getCoveredDistance(); // cm
                 if (remainingDistance <= STOP_TOLERANCE) {
                     stop();
                 } else {
                     float speed = computeScaledSpeed(
-                        remainingDistance,
-                        goalDistance,
-                        ACCEL_FORWARD_DISTANCE,
-                        minSpeed,
-                        maxSpeed
+                        remainingDistance, goalDistance, ACCEL_FORWARD_DISTANCE, minSpeed, maxSpeed
                     );
 
-                    float leftSpeed = speed;
+                    float leftSpeed  = speed;
                     float rightSpeed = speed;
 
-                    // Ajoute l'offset
+                    // Offset de ligne (si utilisé ailleurs)
                     switch(offsetMode){
-                        case LineOffsetEnum::PETIT_GAUCHE: leftSpeed  *= 0.95f; break;
-                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.85f; break;
-                        case LineOffsetEnum::PETIT_DROITE: rightSpeed *= 0.95f; break;
-                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.85f; break;
-                        case LineOffsetEnum::AUCUN: break;
-                        default: break;
+                        case LineOffsetEnum::PETIT_GAUCHE: leftSpeed  *= 0.55f; break;
+                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.10f; break;
+                        case LineOffsetEnum::PETIT_DROITE: rightSpeed *= 0.55f; break;
+                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.10f; break;
+                        case LineOffsetEnum::AUCUN: default: break;
                     }
 
-                    WHEEL_PID::setPIDDesiredPulse(leftSpeed, rightSpeed);
+                    WHEEL_PID::setPIDDesiredPulse(
+                        leftSpeed,
+                        rightSpeed
+                    );
                 }
                 break;
             }
+
             case MoveEnum::NONE:{
                 WHEEL_PID::setPIDDesiredPulse(0, 0);
                 break;
             }
-            default: {
-                break;
-            }
+
+            default: break;
         }
 
         WHEEL_PID::runPIDController();
     }
 
-    MoveEnum getCurrentMove(){
-        return currentMove;
-    }
-
-    void setOffset(LineOffsetEnum mode){
+    
+    MoveEnum getCurrentMove(){ return currentMove; }
+    void setOffset(LineOffsetEnum mode){ 
         offsetMode = mode;
     }
 }

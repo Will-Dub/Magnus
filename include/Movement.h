@@ -3,16 +3,19 @@
 #include <Arduino.h>
 #include <LibRobus.h>
 #include "WheelPID.h"
+#include "Line.h"
 
 namespace MOVEMENT {
-    constexpr float RAYON (0.19 / 2.0);
-    constexpr float ACCEL_FORWARD_DISTANCE = 9.0f;
-    constexpr float ACCEL_TURN_DISTANCE = 4.8f;
-    constexpr float STOP_TOLERANCE = 0.1f;
-    constexpr int MAX_TURNING_SPEED = 4500;
-    constexpr int MIN_TURNING_SPEED = 1500;
-    constexpr int MAX_STRAIGHT_SPEED = 6000;
-    constexpr int MIN_STRAIGHT_SPEED = 1000;
+    // RAYON = demi-empattement en mètres (ex.: empattement 19 cm => rayon 9.5 cm => 0.095 m)
+    constexpr float RAYON = (0.18f / 2.0f)*1.05;          // m
+    constexpr float ACCEL_FORWARD_DISTANCE = 4.0f;   // cm
+    constexpr float ACCEL_TURN_DISTANCE    = 2.0f;   // cm
+    constexpr float STOP_TOLERANCE         = 1.0f;   
+
+    constexpr int MAX_TURNING_SPEED   = 5500;
+    constexpr int MIN_TURNING_SPEED   = 1500;
+    constexpr int MAX_STRAIGHT_SPEED  = 7000;
+    constexpr int MIN_STRAIGHT_SPEED  = 1000;
 
     enum MoveEnum { FORWARD, TURN_LEFT, TURN_RIGHT, NONE };
 
@@ -25,20 +28,43 @@ namespace MOVEMENT {
         GRAND_DROITE
     };
 
-    //function prototypes
+    
     void init();
 
-    void moveForward(float pDistance, int pMinSpeed = MIN_STRAIGHT_SPEED, int pMaxSpeed = MAX_STRAIGHT_SPEED);
-    void moveForwardNonBlocking(float pDistance, int pMinSpeed = MIN_STRAIGHT_SPEED, int pMaxSpeed = MAX_STRAIGHT_SPEED);
+    void moveForward(float distance_cm,
+                     int pMinSpeed = MIN_STRAIGHT_SPEED,
+                     int pMaxSpeed = MAX_STRAIGHT_SPEED);
+    void moveForwardNonBlocking(float distance_cm,
+                                int pMinSpeed = MIN_STRAIGHT_SPEED,
+                                int pMaxSpeed = MAX_STRAIGHT_SPEED);
 
-    void turnRight(float pAngle, int pMinSpeed = MIN_TURNING_SPEED, int pMaxSpeed = MAX_TURNING_SPEED);
-    void turnRightNonBlocking(float pAngle, int pMinSpeed = MIN_TURNING_SPEED, int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnRight(float angle_deg,
+                   int pMinSpeed = MIN_TURNING_SPEED,
+                   int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnRightNonBlocking(float angle_deg,
+                              int pMinSpeed = MIN_TURNING_SPEED,
+                              int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnRightUntilLine(int pMinSpeed = MIN_TURNING_SPEED,
+                              int pMaxSpeed = MAX_TURNING_SPEED);
 
-    void turnLeft(float pAngle, int pMinSpeed = MIN_TURNING_SPEED, int pMaxSpeed = MAX_TURNING_SPEED);
-    void turnLeftNonBlocking(float pAngle, int pMinSpeed = MIN_TURNING_SPEED, int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnLeft(float angle_deg,
+                  int pMinSpeed = MIN_TURNING_SPEED,
+                  int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnLeftNonBlocking(float angle_deg,
+                             int pMinSpeed = MIN_TURNING_SPEED,
+                             int pMaxSpeed = MAX_TURNING_SPEED);
+    void turnLeftUntilLine(int pMinSpeed = MIN_TURNING_SPEED,
+                              int pMaxSpeed = MAX_TURNING_SPEED);
 
-    float distanceToAngle(float angle);
-    float angleToDistance(float distance);
+    void moveUntilLine(int pMinSpeed = MIN_STRAIGHT_SPEED,
+                                int pMaxSpeed = MAX_STRAIGHT_SPEED);
+
+    void waitUntilLine();
+
+    // conversions : distance en cm, angle en degrés
+    float distanceToAngle(float distance_cm);
+    float angleToDistance(float angle_deg);
+
     void stop();
     void waitEndMove();
     void runMovementController();
