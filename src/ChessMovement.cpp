@@ -3,9 +3,6 @@
 namespace CHESS_MOVEMENT{
     void moveTo(int col, int row){
         // Assume its facing north
-        int colPassed = 0;
-        int rowPassed = 0;
-
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(row);
 
@@ -13,6 +10,8 @@ namespace CHESS_MOVEMENT{
         MOVEMENT::turnRightUntilLine();
 
         waitEndMoveByLineNb(col);
+
+        
     }
 
     void waitEndMoveByLineNb(int nbLine){
@@ -22,7 +21,12 @@ namespace CHESS_MOVEMENT{
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
             MOVEMENT::runMovementController();
 
-            if(!oldWasOnAllLine && LINE)
+            if(!oldWasOnAllLine && LINE::ucReadLineSensors() == 0b111){
+                detectedLines++;
+                oldWasOnAllLine = true;
+            }else if(LINE::ucReadLineSensors() != 0b111){
+                oldWasOnAllLine = false;
+            }
             
             delay(2);
         }

@@ -104,7 +104,7 @@ namespace MOVEMENT {
             runMovementController();
             delay(1);
 
-            if(ucReadLineSensors() != 0){
+            if(LINE::ucReadLineSensors() != 0){
                 linePoolCount++;
                 if(linePoolCount >= 3) stop();
             }
