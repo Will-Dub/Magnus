@@ -3,6 +3,7 @@
 #include "Chess.h"
 #include "Lcd.h"
 #include "Menu.h"
+#include "ChessMovement.h"
 
 bool isGameStarted = false;
 bool isPreviousMoveInvalid = false;
@@ -11,8 +12,9 @@ bool isPreviousMoveInvalid = false;
 // MAIN CODE.
 //-----------------------------
 void setup() {
-    //BoardInit();
+    BoardInit();
     Serial.begin(115200);
+    MOVEMENT::init();
     CHESS::setupBoard();
     MENU::init();
     LCD::initLcd();
