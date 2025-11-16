@@ -14,8 +14,10 @@ namespace MENU {
 
     const int BUTTON_PRESS_TIME_MS = 50;
     const int PIN_OK_BUTTON = 22;
-    const int PIN_UP_BUTTON = 24;
-    const int PIN_RIGHT_BUTTON = 26;
+    const int PIN_UP_BUTTON = 23;
+    const int PIN_DOWN_BUTTON = 24;
+    const int PIN_RIGHT_BUTTON = 25;
+    const int PIN_LEFT_BUTTON = 26;
 
     void init();
     void waitForGameStart();

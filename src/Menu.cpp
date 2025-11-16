@@ -249,12 +249,12 @@ namespace MENU {
         static unsigned long startOkButtonPress = 0;
         static bool isUpPressed = false;
         static unsigned long startUpButtonPress = 0;
-        //static bool isDownPressed = false;
-        //static unsigned long startDownButtonPress = 0;
+        static bool isDownPressed = false;
+        static unsigned long startDownButtonPress = 0;
         static bool isRightPressed = false;
         static unsigned long startRightButtonPress = 0;
-        //static bool isLeftPressed = false;
-        //static unsigned long startLeftButtonPress = 0;
+        static bool isLeftPressed = false;
+        static unsigned long startLeftButtonPress = 0;
         unsigned long currentTime = millis();
 
         bool okButtonPressed = digitalRead(PIN_OK_BUTTON);
@@ -295,7 +295,7 @@ namespace MENU {
             startUpButtonPress = 0;
         }
 
-        /*bool downButtonPressed = digitalRead(PIN_DOWN_BUTTON);
+        bool downButtonPressed = digitalRead(PIN_DOWN_BUTTON);
 
         if(downButtonPressed){
             if(startDownButtonPress == 0){
@@ -311,7 +311,7 @@ namespace MENU {
         }else{
             isDownPressed = false;
             startDownButtonPress = 0;
-        }*/
+        }
 
         bool rightButtonPressed = digitalRead(PIN_RIGHT_BUTTON);
 
@@ -332,7 +332,7 @@ namespace MENU {
             startRightButtonPress = 0;
         }
 
-        /*bool leftButtonPressed = digitalRead(PIN_LEFT_BUTTON);
+        bool leftButtonPressed = digitalRead(PIN_LEFT_BUTTON);
 
         if(leftButtonPressed){
             if(startLeftButtonPress == 0){
@@ -348,7 +348,7 @@ namespace MENU {
         }else{
             isLeftPressed = false;
             startLeftButtonPress = 0;
-        }*/
+        }
 
         delay(30);
     }
