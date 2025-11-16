@@ -48,8 +48,14 @@ namespace CHESS
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow){
         MovePieceResult result {};
         Serial.print("Mouvement entré: ");
-        Serial.print(String(fromCol) + String(fromRow) + " à " + String(toCol) + String(toRow));
-        Serial.print("\033[0m");
+        char selectedFromColChar = 'A' + fromCol;
+        int selectedFromRow = fromRow + 1;
+        char selectedToColChar = 'A' + toCol;
+        int selectedToRow = toRow + 1;
+
+        String textMove = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"] à ["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
+        Serial.println(textMove);
+        //Serial.print("\033[0m");
 
         // Check si les position sont dans le range 0-8
         if(!isInsideBoard(fromRow, fromCol) || !isInsideBoard(toRow, toCol)){
@@ -123,11 +129,11 @@ namespace CHESS
         switch (position.player)
         {
         case Player::WHITE:
-            Serial.print("\033[37m");
+            //Serial.print("\033[37m");
             break;
         
         case Player::BLACK:
-            Serial.print("\033[33m");
+            //Serial.print("\033[33m");
             break;
         
         default:
@@ -162,13 +168,14 @@ namespace CHESS
             break;
         }
 
-        Serial.print("\033[0m");
+        //Serial.print("\033[0m");
     }
 
     void printCurrentPlayer(){
         Serial.print("Au tour de: ");
-        Serial.println(currentTurnPlayer == Player::WHITE ? "\033[37mBlanc" : "\033[33mNoir");
-        Serial.print("\033[0m");
+        Serial.println(currentTurnPlayer == Player::WHITE ? "Blanc" : "Noir");
+        //Serial.println(currentTurnPlayer == Player::WHITE ? "\033[37mBlanc" : "\033[33mNoir");
+        //Serial.print("\033[0m");
     }
 
     String getErrorMessage(Erreur erreur){
