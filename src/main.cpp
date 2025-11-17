@@ -18,7 +18,7 @@ void setup() {
     CHESS::setupBoard();
     MENU::init();
     LCD::initLcd();
-    CHESS_MOVEMENT::moveFromOriginTo(1,1);
+    CHESS_MOVEMENT::moveFromWhiteToSquare(1,1);
     delay(100000);
 }
 
