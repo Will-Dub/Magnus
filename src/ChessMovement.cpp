@@ -1,28 +1,63 @@
 #include "ChessMovement.h"
 
 namespace CHESS_MOVEMENT{
-    void moveFromOriginTo(int destCol, int destRow){
+    void moveFromWhiteToSquare(int destCol, int destRow){
         if(destCol < 0 || destRow < 0){
             return;
         }
 
-        // Ce rend SUR la ligne
         if(destRow != 0){
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destRow);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         }
 
-        // Tourne pour regarder l'EST
-        MOVEMENT::turnRight(45);
-        MOVEMENT::turnRightUntilLine();
+        if(destCol <= 3){
+            MOVEMENT::turnLeft(45);
+            MOVEMENT::turnLeftUntilLine();
+            
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(4 - destCol);
 
-        // Avance jusqu'au milieu de la case
+            MOVEMENT::turnRight(85);
+        }else if(destCol >= 4){
+            MOVEMENT::turnRight(45);
+            MOVEMENT::turnRightUntilLine();
+            
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(destCol - 3);
+
+            MOVEMENT::turnLeft(85);
+        }
+
+        // Avance jusqu'au milieu
+        MOVEMENT::moveUntilLine();
+    }
+
+    void moveFromBlackToSquare(int destCol, int destRow){
+        if(destCol < 0 || destRow < 0){
+            return;
+        }
+
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destCol+1);
+        waitEndMoveByLineNb(8 - destRow);
 
-        // Tourne pour regarder le NORD
-        MOVEMENT::turnLeft(85);
+        if(destCol <= 3){
+            MOVEMENT::turnRight(45);
+            MOVEMENT::turnRightUntilLine();
+            
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(4 - destCol);
+
+            MOVEMENT::turnRight(85);
+        }else if(destCol >= 4){
+            MOVEMENT::turnLeft(45);
+            MOVEMENT::turnLeftUntilLine();
+            
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(destCol - 3);
+
+            MOVEMENT::turnLeft(85);
+        }
 
         // Avance jusqu'au milieu
         MOVEMENT::moveUntilLine();
@@ -33,7 +68,7 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForwardUntilLine();
+        MOVEMENT::moveUntilLine();
         MOVEMENT::turnLeft(45);
         MOVEMENT::turnLeftUntilLine();
 
@@ -41,21 +76,67 @@ namespace CHESS_MOVEMENT{
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(currentCol);
         MOVEMENT::turnLeft(45);
-        MOVEMENT::turnRightUntilLine();
+        MOVEMENT::turnLeftUntilLine();
 
-        // Tourne pour regarder l'EST
+        // Avance a l'origine
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(currentRow+1);
+
+        //Tourne vers la zone
         MOVEMENT::turnRight(45);
         MOVEMENT::turnRightUntilLine();
 
-        // Avance jusqu'au milieu de la case
+        // Avance au dropoff
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destCol+1);
+        waitEndMoveByEndLine();
 
-        // Tourne pour regarder le NORD
-        MOVEMENT::turnLeft(85);
+        // Tourne jusqu'a la ligne(180) pour regarder le NORD
+        MOVEMENT::turnLeft(90);
+        MOVEMENT::turnLeftUntilLine();
+    }
 
-        // Avance jusqu'au milieu
-        MOVEMENT::moveUntilLine();
+    void moveFromDropOffToWhite(){
+        // Ce rend devant le joueur blanc
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(5);
+
+        // Tourne pour être à dos au joueur
+        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnLeftUntilLine();
+    }
+
+    void moveFromDropOffToBlack(){
+        // Ce rend à l'origine(0,0)
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(1);
+
+        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnLeftUntilLine();
+
+        // Avance au fond du tableau
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(8);
+
+        // Avance devant le joueur
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(4);
+
+        // Tourne pour être à dos au joueur
+        MOVEMENT::turnRight(45);
+        MOVEMENT::turnRightUntilLine();
+    }
+
+    void waitEndMoveByEndLine(){
+        while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
+            LINE::vCourseCorrection();
+            MOVEMENT::runMovementController();
+
+            if(LINE::ucReadLineSensors() == 0b000){
+                MOVEMENT::stop();
+            }
+            
+            delay(2);
+        }
     }
 
     void waitEndMoveByLineNb(int nbLine){
