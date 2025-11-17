@@ -4,6 +4,7 @@
 #include "Lcd.h"
 #include "Menu.h"
 #include "ChessMovement.h"
+#include "ArmMagnetControl.h"
 
 bool isGameStarted = false;
 bool isPreviousMoveInvalid = false;
@@ -19,6 +20,8 @@ void setup() {
     MENU::init();
     LCD::initLcd();
     CHESS_MOVEMENT::moveFromWhiteToSquare(1,1);
+    magSetup();
+    armOn();
     delay(100000);
 }
 
