@@ -71,28 +71,12 @@ namespace MENU {
         int rowIndex = 0;
         int oldColIndex = 0;
         int oldRowIndex = 0;
-        bool isCurrentlyOnCol = true;
         LCD::blinkChessBoard(colIndex, rowIndex);
 
         while(!isOkPressedFlag){
-            // Change d'index
-            if(isCurrentlyOnCol && currentHorizontalIndex % 2 == 1){
-                // Change de col à row
-                currentVerticalIndex = rowIndex;
-                isCurrentlyOnCol = false;
-            }else if(!isCurrentlyOnCol && currentHorizontalIndex % 2 == 0){
-                // Change de row à col
-                currentVerticalIndex = colIndex;
-                isCurrentlyOnCol = true;
-            }
-
             // Met à jour l'index
-            if (currentHorizontalIndex % 2 == 0){
-                colIndex = currentVerticalIndex % 8;
-            }
-            else{
-                rowIndex = currentVerticalIndex % 8;
-            }
+            colIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+            rowIndex = ((currentVerticalIndex % 8) + 8) % 8;
 
             // Met à jour le chess board
             if(oldColIndex != colIndex || oldRowIndex != rowIndex){
@@ -106,7 +90,7 @@ namespace MENU {
 
             //blinkChar(String(selectedFromColChar) + String(selectedFromRow));
             String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
-            blinkWord(text, 1, 1, 4, 4);
+            LCD::print(text,1);
             tick();
             LCD::tickBlinkChessBoard();
         }
@@ -119,24 +103,9 @@ namespace MENU {
         LCD::blinkChessBoard(colIndex, rowIndex);
 
         while(!isOkPressedFlag){
-            // Change d'index
-            if(isCurrentlyOnCol && currentHorizontalIndex % 2 == 1){
-                // Change de col à row
-                currentVerticalIndex = rowIndex;
-                isCurrentlyOnCol = false;
-            }else if(!isCurrentlyOnCol && currentHorizontalIndex % 2 == 0){
-                // Change de row à col
-                currentVerticalIndex = colIndex;
-                isCurrentlyOnCol = true;
-            }
-
             // Met à jour col ou row
-            if (currentHorizontalIndex % 2 == 0){
-                colIndex = currentVerticalIndex % 8;
-            }
-            else{
-                rowIndex = currentVerticalIndex % 8;
-            }
+            colIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+            rowIndex = ((currentVerticalIndex % 8) + 8) % 8;
 
             // Met à jour le chess board
             if(oldColIndex != colIndex || oldRowIndex != rowIndex){
@@ -149,7 +118,7 @@ namespace MENU {
             selectedToRow = rowIndex + 1;
             //blinkChar(String(selectedToColChar) + String(selectedToRow));
             String text = "["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
-            blinkWord(text, 1, 1, 4, 4);
+            LCD::print(text,1);
             tick();
             LCD::tickBlinkChessBoard();
         }
@@ -249,12 +218,12 @@ namespace MENU {
         static unsigned long startOkButtonPress = 0;
         static bool isUpPressed = false;
         static unsigned long startUpButtonPress = 0;
-        //static bool isDownPressed = false;
-        //static unsigned long startDownButtonPress = 0;
+        static bool isDownPressed = false;
+        static unsigned long startDownButtonPress = 0;
         static bool isRightPressed = false;
         static unsigned long startRightButtonPress = 0;
-        //static bool isLeftPressed = false;
-        //static unsigned long startLeftButtonPress = 0;
+        static bool isLeftPressed = false;
+        static unsigned long startLeftButtonPress = 0;
         unsigned long currentTime = millis();
 
         bool okButtonPressed = digitalRead(PIN_OK_BUTTON);
@@ -295,7 +264,7 @@ namespace MENU {
             startUpButtonPress = 0;
         }
 
-        /*bool downButtonPressed = digitalRead(PIN_DOWN_BUTTON);
+        bool downButtonPressed = digitalRead(PIN_DOWN_BUTTON);
 
         if(downButtonPressed){
             if(startDownButtonPress == 0){
@@ -311,7 +280,7 @@ namespace MENU {
         }else{
             isDownPressed = false;
             startDownButtonPress = 0;
-        }*/
+        }
 
         bool rightButtonPressed = digitalRead(PIN_RIGHT_BUTTON);
 
@@ -332,7 +301,7 @@ namespace MENU {
             startRightButtonPress = 0;
         }
 
-        /*bool leftButtonPressed = digitalRead(PIN_LEFT_BUTTON);
+        bool leftButtonPressed = digitalRead(PIN_LEFT_BUTTON);
 
         if(leftButtonPressed){
             if(startLeftButtonPress == 0){
@@ -341,14 +310,14 @@ namespace MENU {
             }
             else if (currentTime - startLeftButtonPress >= BUTTON_PRESS_TIME_MS) {
                 if(!isLeftPressed){
-                    currentHorizontalIndex++;
+                    currentHorizontalIndex--;
                     isLeftPressed = true;
                 }
             }
         }else{
             isLeftPressed = false;
             startLeftButtonPress = 0;
-        }*/
+        }
 
         delay(30);
     }
