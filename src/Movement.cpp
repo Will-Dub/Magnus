@@ -102,7 +102,7 @@ namespace MOVEMENT {
         int linePoolCount = 0;
         while(currentMove != MoveEnum::NONE){
             runMovementController();
-            delay(1);
+            delay(2);
 
             if(LINE::ucReadLineSensors() != 0){
                 linePoolCount++;

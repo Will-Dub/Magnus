@@ -37,7 +37,7 @@ namespace CHESS_MOVEMENT
     void moveFromOriginTo(int destCol, int destRow);
 
     /**
-     * @brief Bouge d'une case vers la zone de drop
+     * @brief Bouge d'une case vers la zone de drop(assume que le robot est au milieu de la case et ragarde le nord)
      * 
      * @param currentCol entre 0-7
      * @param currentRow entre 0-7

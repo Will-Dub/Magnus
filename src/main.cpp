@@ -18,6 +18,8 @@ void setup() {
     CHESS::setupBoard();
     MENU::init();
     LCD::initLcd();
+    CHESS_MOVEMENT::moveFromOriginTo(1,1);
+    delay(100000);
 }
 
 void loop() {

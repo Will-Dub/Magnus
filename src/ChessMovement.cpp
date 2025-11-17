@@ -10,11 +10,11 @@ namespace CHESS_MOVEMENT{
         if(destRow != 0){
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destRow);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         }
 
         // Tourne pour regarder l'EST
-        MOVEMENT::turnRight(30);
+        MOVEMENT::turnRight(45);
         MOVEMENT::turnRightUntilLine();
 
         // Avance jusqu'au milieu de la case
@@ -22,7 +22,37 @@ namespace CHESS_MOVEMENT{
         waitEndMoveByLineNb(destCol+1);
 
         // Tourne pour regarder le NORD
-        MOVEMENT::turnLeft(90);
+        MOVEMENT::turnLeft(85);
+
+        // Avance jusqu'au milieu
+        MOVEMENT::moveUntilLine();
+    }
+    
+    void moveFromSquareToDropOff(int currentCol, int currentRow){
+        if(currentCol < 0 || currentRow < 0){
+            return;
+        }
+
+        MOVEMENT::moveForwardUntilLine();
+        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnLeftUntilLine();
+
+        // Ce rend SUR la première ligne
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(currentCol);
+        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnRightUntilLine();
+
+        // Tourne pour regarder l'EST
+        MOVEMENT::turnRight(45);
+        MOVEMENT::turnRightUntilLine();
+
+        // Avance jusqu'au milieu de la case
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(destCol+1);
+
+        // Tourne pour regarder le NORD
+        MOVEMENT::turnLeft(85);
 
         // Avance jusqu'au milieu
         MOVEMENT::moveUntilLine();
@@ -33,6 +63,7 @@ namespace CHESS_MOVEMENT{
         bool oldWasOnAllLine = false;
 
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
+            LINE::vCourseCorrection();
             MOVEMENT::runMovementController();
 
             if(!oldWasOnAllLine && LINE::ucReadLineSensors() == 0b111){
