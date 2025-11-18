@@ -65,20 +65,23 @@ namespace MENU {
         LCD::print("De:");
         int fromColIndex = 0;
         int fromRowIndex = 0;
-        int oldColIndex = 0;
-        int oldRowIndex = 0;
+        int oldColIndex = -1;
+        int oldRowIndex = -1;
 
         if(!isWhitePlaying){
-            fromColIndex = 7;
-            fromRowIndex = 7;
+            currentHorizontalIndex = 1;
+            currentVerticalIndex = 1;
         }
-
-        LCD::blinkChessBoard(fromColIndex, fromRowIndex, !isWhitePlaying);
 
         while(!isOkPressedFlag){
             // Met à jour l'index
-            fromColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
-            fromRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            if(isWhitePlaying){
+                fromColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+                fromRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            }else{
+                fromColIndex = ((-currentHorizontalIndex % 8) + 8) % 8;
+                fromRowIndex = ((-currentVerticalIndex % 8) + 8) % 8;
+            }
 
             // Met à jour le chess board
             if(oldColIndex != fromColIndex || oldRowIndex != fromRowIndex){
@@ -88,7 +91,10 @@ namespace MENU {
             }
 
             // Affiche le mouvement
-            String text = "["+String('A' + fromColIndex)+"]" + "["+String(fromRowIndex + 1)+"]";
+            char selectedFromColChar = 'A' + fromColIndex;
+            int selectedFromRow = fromRowIndex + 1;
+
+            String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
             LCD::print(text,1);
 
             // Update le lcd et les boutons
@@ -101,18 +107,23 @@ namespace MENU {
         LCD::print("A:");
         int toColIndex = 0;
         int toRowIndex = 0;
+        oldColIndex = -1;
+        oldRowIndex = -1;
         
         if(!isWhitePlaying){
-            toColIndex = 7;
-            toRowIndex = 7;
+            currentHorizontalIndex = 1;
+            currentVerticalIndex = 1;
         }
-
-        LCD::blinkChessBoard(toColIndex, toRowIndex, !isWhitePlaying);
 
         while(!isOkPressedFlag){
             // Met à jour col ou row
-            toColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
-            toRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            if(isWhitePlaying){
+                toColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+                toRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            }else{
+                toColIndex = ((-currentHorizontalIndex % 8) + 8) % 8;
+                toRowIndex = ((-currentVerticalIndex % 8) + 8) % 8;
+            }
 
             // Met à jour le chess board
             if(oldColIndex != toColIndex || oldRowIndex != toRowIndex){
@@ -122,7 +133,10 @@ namespace MENU {
             }
 
             // Affiche le mouvement
-            String text = "["+String('A' + toColIndex)+"]" + "["+String(toRowIndex + 1)+"]";
+            char selectedToColChar = 'A' + toColIndex;
+            int selectedToRow = toRowIndex + 1;
+
+            String text = "["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
             LCD::print(text,1);
 
             // Update le lcd et les boutons
@@ -141,7 +155,7 @@ namespace MENU {
 
         if(currentHorizontalIndex % 2 == 1){
             // Utilisateur pas sûr
-            return getUserMove(isPreviousMoveInvalid, !isWhitePlaying);
+            return getUserMove(isPreviousMoveInvalid, isWhitePlaying);
         }
 
         MENU::MoveInput input;

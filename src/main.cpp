@@ -62,8 +62,9 @@ void loop() {
     // Execute the move physically
     LCD::clear();
     LCD::print("EN COURS...");
+    delay(1000);
     // Capture move
-    if (result.isPawnOnDest) 
+    /*if (result.isPawnOnDest) 
     {
         // Collect the pice and drop it off
         if (isWhitePlaying)
@@ -106,6 +107,6 @@ void loop() {
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
     }
-
+    */
     isPreviousMoveInvalid = false;
 }

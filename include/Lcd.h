@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 namespace LCD{
-    const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+    const int rs = 38, en = 39, d4 = 40, d5 = 41, d6 = 42, d7 = 43;
     const int BLINK_TIME_MS = 500;
     const int mapXPixel1Table[8] = {0, 1, 1, 1, 2, 2, 3, 3};
     const int mapXPixel2Table[8] = {0, 1, 1, 2, 2, 2, 3, 3};
