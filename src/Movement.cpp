@@ -29,10 +29,16 @@ namespace MOVEMENT {
         waitEndMove();
     }
 
-    void turnRightUntilLine(int pMinSpeed,
+    void turnRightUntilLine(bool waitUntilMiddle,
+                              int pMinSpeed,
                               int pMaxSpeed){
         turnRightNonBlocking(360, pMinSpeed, pMaxSpeed);
-        waitUntilLine();
+        if(waitUntilMiddle){
+            waitUntilLine(true, false);
+        }
+        else{
+            waitUntilLine();
+        }
     }
 
     void turnLeft(float angle_deg, int pMinSpeed, int pMaxSpeed) {
@@ -40,10 +46,15 @@ namespace MOVEMENT {
         waitEndMove();
     }
 
-     void turnLeftUntilLine(int pMinSpeed,
+     void turnLeftUntilLine(bool waitUntilMiddle,
+                              int pMinSpeed,
                               int pMaxSpeed){
         turnLeftNonBlocking(360, pMinSpeed, pMaxSpeed);
-        waitUntilLine();
+        if(waitUntilMiddle){
+            waitUntilLine(false, true);
+        }else{
+            waitUntilLine();
+        }
     }
 
     void moveUntilLine(int pMinSpeed, int pMaxSpeed)
@@ -98,15 +109,40 @@ namespace MOVEMENT {
         }
     }
 
-    void waitUntilLine(){
+    void waitUntilLine(bool waitUntilRightOut, bool waitUntilLeftOut){
         int linePoolCount = 0;
+
         while(currentMove != MoveEnum::NONE){
             runMovementController();
             delay(2);
 
-            if(LINE::ucReadLineSensors() != 0){
-                linePoolCount++;
-                if(linePoolCount >= 3) stop();
+            unsigned char lineState = LINE::ucReadLineSensors();
+
+            if(lineState != 0){
+                bool rightOut = !(lineState & 0x01);
+                bool leftOut  = !(lineState & 0x04);
+
+                bool conditionMet = false;
+
+                if (waitUntilRightOut && rightOut) {
+                    conditionMet = true;
+                }
+
+                if (waitUntilLeftOut && leftOut) {
+                    conditionMet = true;
+                }
+
+                if (waitUntilRightOut && waitUntilLeftOut) {
+                    conditionMet = rightOut && leftOut;
+                }
+
+                if(!waitUntilRightOut && !waitUntilLeftOut){
+                    linePoolCount++;
+                }
+
+                if (conditionMet || linePoolCount >= 3) {
+                    stop();
+                }
             }
         }
     }

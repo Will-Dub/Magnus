@@ -131,8 +131,9 @@ namespace CHESS
      */
     void printBoard() {
         Serial.println();
-        for (int r = 0; r < 8; ++r) {
+        for (int r = 7; r >= 0; --r) {
             Serial.print(r + 1);
+            
             Serial.print(" ");
 
             for (int c = 0; c < 8; ++c) {

@@ -6,7 +6,7 @@
 namespace CHESS_MOVEMENT
 {
     const float MAX_MOVE_DISTANCE = 99999;
-    const float ROBUS_RADIUS_CM = 15/2;
+    const float ROBUS_RADIUS_CM = 19.5f/2;
 
     //                 [BLACK]
     //    --------------------------------- 
@@ -37,6 +37,8 @@ namespace CHESS_MOVEMENT
     void moveFromSquareToWhite(int currentCol, int currentRow);
     void moveFromDropOffToSquare(int destCol, int destRow);
     void moveSquareToSquare(int currentCol, int currentRow, int destCol, int destRow);
+    
+    //TESTER
     void moveFromSquareToDropOff(int currentCol, int currentRow);
     void moveFromDropOffToWhite();
     void moveFromBlackToWhite();

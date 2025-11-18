@@ -44,7 +44,8 @@ namespace MOVEMENT {
     void turnRightNonBlocking(float angle_deg,
                               int pMinSpeed = MIN_TURNING_SPEED,
                               int pMaxSpeed = MAX_TURNING_SPEED);
-    void turnRightUntilLine(int pMinSpeed = MIN_TURNING_SPEED,
+    void turnRightUntilLine(bool waitUntilMiddle = false,
+                              int pMinSpeed = MIN_TURNING_SPEED,
                               int pMaxSpeed = MAX_TURNING_SPEED);
 
     void turnLeft(float angle_deg,
@@ -53,13 +54,14 @@ namespace MOVEMENT {
     void turnLeftNonBlocking(float angle_deg,
                              int pMinSpeed = MIN_TURNING_SPEED,
                              int pMaxSpeed = MAX_TURNING_SPEED);
-    void turnLeftUntilLine(int pMinSpeed = MIN_TURNING_SPEED,
+    void turnLeftUntilLine(bool waitUntilMiddle = false,
+                              int pMinSpeed = MIN_TURNING_SPEED,
                               int pMaxSpeed = MAX_TURNING_SPEED);
 
     void moveUntilLine(int pMinSpeed = MIN_STRAIGHT_SPEED,
                                 int pMaxSpeed = MAX_STRAIGHT_SPEED);
 
-    void waitUntilLine();
+    void waitUntilLine(bool waitUntilRightOut = false, bool waitUntilLeftOut = false);
 
     // conversions : distance en cm, angle en degrés
     float distanceToAngle(float distance_cm);

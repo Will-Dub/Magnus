@@ -21,6 +21,8 @@ void setup() {
     LCD::initLcd();
     magSetup();
     armOn();
+    //CHESS_MOVEMENT::moveFromSquareToDropOff(7,0);
+    //delay(1000000);
 }
 
 void loop() {

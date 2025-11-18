@@ -70,44 +70,44 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         MOVEMENT::turnLeft(45);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeftUntilLine(true);
 
         // Ce rend SUR la première ligne
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(currentCol);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        waitEndMoveByLineNb(currentCol+1);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         MOVEMENT::turnLeft(45);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeftUntilLine(true);
 
-        // Avance a l'origine
+        // Avance au dropoff
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(currentRow+1);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         //Tourne vers la zone
-        MOVEMENT::turnRight(45);
-        MOVEMENT::turnRightUntilLine();
+        MOVEMENT::turnRight(65);
+        MOVEMENT::turnRightUntilLine(true);
 
         // Avance au dropoff
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByEndLine();
 
-        // Tourne jusqu'a la ligne(180) pour regarder l'EST
-        MOVEMENT::turnLeft(90);
-        MOVEMENT::turnLeftUntilLine();
+        // Tourne jusqu'a la ligne(180) pour regarder l'OUEST
+        MOVEMENT::turnLeft(135);
+        MOVEMENT::turnLeftUntilLine(true);
     }
 
     void moveFromDropOffToWhite(){
         // Ce rend devant le joueur blanc
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(5);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         // Tourne pour être à dos au joueur
         MOVEMENT::turnLeft(45);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeftUntilLine(true);
     }
 
     void moveFromDropOffToSquare(int destCol, int destRow){
@@ -304,23 +304,27 @@ namespace CHESS_MOVEMENT{
     }
 
     void moveFromBlackToWhite(){
-        MOVEMENT::turnLeft(125);
-        MOVEMENT::turnLeftUntilLine();
-
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(8);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-        MOVEMENT::turnLeft(125);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeft(155);
+        MOVEMENT::turnLeftUntilLine(true);
     }
 
     void waitEndMoveByEndLine(){
+        int countOutside = 0;
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
             LINE::vCourseCorrection();
             MOVEMENT::runMovementController();
 
             if(LINE::ucReadLineSensors() == 0b000){
+                countOutside++;
+            }else{
+                countOutside = 0;
+            }
+
+            if(countOutside >= 35){
                 MOVEMENT::stop();
             }
             
