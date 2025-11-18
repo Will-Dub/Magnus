@@ -59,6 +59,7 @@ namespace CHESS
      */
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow){
         MovePieceResult result {};
+        result.player = currentTurnPlayer;
 
         // Affiche le move entré
         char selectedFromColChar = 'A' + fromCol;
@@ -245,5 +246,9 @@ namespace CHESS
         }else{
             currentTurnPlayer = Player::WHITE;
         }
+    }
+
+    Player getCurrentTurn(){
+        return currentTurnPlayer;
     }
 }
