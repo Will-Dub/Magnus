@@ -65,12 +65,10 @@ void loop() {
     if (result.isPawnOnDest) 
     {
         // Collect the pice and drop it off
-        if (result.player == CHESS::Player::WHITE){
+        if (result.player == CHESS::Player::WHITE)
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.toColIndex, moveInput.toRowIndex);
-        }
-        else{
+        else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.toColIndex, moveInput.toRowIndex);
-        }
 
         CHESS_MOVEMENT::moveFromSquareToDropOff(moveInput.toColIndex, moveInput.toRowIndex);
 
@@ -84,12 +82,10 @@ void loop() {
         );
 
         // Return
-        if (result.player == CHESS::Player::WHITE){
+        if (result.player == CHESS::Player::WHITE)
             CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
-        }
-        else{
+        else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
-        }
     }
     // Normal move
     else 
