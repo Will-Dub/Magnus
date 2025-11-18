@@ -156,7 +156,12 @@ namespace LCD
         inverse[yPos+1] ^= (1 << x);
     }
 
-    void blinkChessBoard(int col, int row){
+    void blinkChessBoard(int col, int row, bool isInverse){
+        if(isInverse){
+            col = 7 - col;
+            row = 7 - row;
+        }
+
         lcd.createChar(0, topLeft);
         lcd.createChar(1, topMiddleLeft);
         lcd.createChar(2, topMiddleRight);

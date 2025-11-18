@@ -39,7 +39,7 @@ namespace MENU {
         }
     }
 
-    MoveInput getUserMove(bool isPreviousMoveInvalid){
+    MoveInput getUserMove(bool isPreviousMoveInvalid, bool isWhitePlaying){
         // Dialogue: Début de tour
         reset();
         if(!isPreviousMoveInvalid){
@@ -67,7 +67,13 @@ namespace MENU {
         int fromRowIndex = 0;
         int oldColIndex = 0;
         int oldRowIndex = 0;
-        LCD::blinkChessBoard(fromColIndex, fromRowIndex);
+
+        if(!isWhitePlaying){
+            fromColIndex = 7;
+            fromRowIndex = 7;
+        }
+
+        LCD::blinkChessBoard(fromColIndex, fromRowIndex, !isWhitePlaying);
 
         while(!isOkPressedFlag){
             // Met à jour l'index
@@ -76,7 +82,7 @@ namespace MENU {
 
             // Met à jour le chess board
             if(oldColIndex != fromColIndex || oldRowIndex != fromRowIndex){
-                LCD::blinkChessBoard(fromColIndex, fromRowIndex);
+                LCD::blinkChessBoard(fromColIndex, fromRowIndex, !isWhitePlaying);
                 oldColIndex = fromColIndex;
                 oldRowIndex = fromRowIndex;
             }
@@ -95,7 +101,13 @@ namespace MENU {
         LCD::print("A:");
         int toColIndex = 0;
         int toRowIndex = 0;
-        LCD::blinkChessBoard(toColIndex, toRowIndex);
+        
+        if(!isWhitePlaying){
+            toColIndex = 7;
+            toRowIndex = 7;
+        }
+
+        LCD::blinkChessBoard(toColIndex, toRowIndex, !isWhitePlaying);
 
         while(!isOkPressedFlag){
             // Met à jour col ou row
@@ -104,7 +116,7 @@ namespace MENU {
 
             // Met à jour le chess board
             if(oldColIndex != toColIndex || oldRowIndex != toRowIndex){
-                LCD::blinkChessBoard(toColIndex, toRowIndex);
+                LCD::blinkChessBoard(toColIndex, toRowIndex, !isWhitePlaying);
                 oldColIndex = toColIndex;
                 oldRowIndex = toRowIndex;
             }
@@ -129,7 +141,7 @@ namespace MENU {
 
         if(currentHorizontalIndex % 2 == 1){
             // Utilisateur pas sûr
-            return getUserMove(isPreviousMoveInvalid);
+            return getUserMove(isPreviousMoveInvalid, !isWhitePlaying);
         }
 
         MENU::MoveInput input;

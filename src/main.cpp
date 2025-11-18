@@ -34,14 +34,15 @@ void loop() {
     CHESS::printCurrentPlayer();
 
     // Get the user move
-    MENU::MoveInput moveInput = MENU::getUserMove(isPreviousMoveInvalid);
+    bool isWhitePlaying = CHESS::getCurrentTurn() == CHESS::Player::WHITE;
+    MENU::MoveInput moveInput = MENU::getUserMove(isPreviousMoveInvalid, isWhitePlaying);
 
     // Execute the move
     if(moveInput.giveUp){
         isGameStarted = false;
         MENU::waitForLoseAck();
 
-        if(CHESS::getCurrentTurn() == CHESS::Player::BLACK){
+        if(!isWhitePlaying){
             CHESS_MOVEMENT::moveFromBlackToWhite();
         }
 
@@ -65,7 +66,7 @@ void loop() {
     if (result.isPawnOnDest) 
     {
         // Collect the pice and drop it off
-        if (result.player == CHESS::Player::WHITE)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.toColIndex, moveInput.toRowIndex);
@@ -82,7 +83,7 @@ void loop() {
         );
 
         // Return
-        if (result.player == CHESS::Player::WHITE)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
@@ -90,7 +91,7 @@ void loop() {
     // Normal move
     else 
     {
-        if (result.player == CHESS::Player::WHITE)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
@@ -100,7 +101,7 @@ void loop() {
             moveInput.toColIndex,   moveInput.toRowIndex
         );
 
-        if (result.player == CHESS::Player::WHITE)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);

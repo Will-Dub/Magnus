@@ -21,7 +21,7 @@ namespace MENU {
 
     void init();
     void waitForGameStart();
-    MoveInput getUserMove(bool isPreviousMoveInvalid);
+    MoveInput getUserMove(bool isPreviousMoveInvalid, bool isWhitePlaying);
     void waitForLoseAck();
     void tick();
     void reset();
