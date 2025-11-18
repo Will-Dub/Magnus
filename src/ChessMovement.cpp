@@ -263,12 +263,6 @@ namespace CHESS_MOVEMENT{
                 MOVEMENT::turnRight(125);
                 MOVEMENT::turnRightUntilLine();
             }
-
-            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-            waitEndMoveByLineNb(1);
-
-            MOVEMENT::turnLeft(85);
-            MOVEMENT::moveUntilLine();
         }else{
             MOVEMENT::turnRight(45);
             MOVEMENT::turnRightUntilLine();
@@ -300,13 +294,13 @@ namespace CHESS_MOVEMENT{
             }else{
                 // Face déjà l'EST
             }
-
-            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-            waitEndMoveByLineNb(1);
-
-            MOVEMENT::turnLeft(85);
-            MOVEMENT::moveUntilLine();
         }
+
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(1);
+
+        MOVEMENT::turnLeft(85);
+        MOVEMENT::moveUntilLine();
     }
 
     void waitEndMoveByEndLine(){

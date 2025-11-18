@@ -5,6 +5,10 @@ namespace CHESS
     BoardSquare board[8][8];
     Player currentTurnPlayer;
 
+    /**
+     * @brief Initialise le board
+     * 
+     */
     void setupBoard(){
         currentTurnPlayer = Player::WHITE;
 
@@ -45,26 +49,37 @@ namespace CHESS
         board[7][4].pos = { Piece::KING, Player::BLACK };
     }
 
+    /**
+     * @brief Fait un move sur le board
+     * 
+     * @param fromCol index col de la position initial (0-7)
+     * @param fromRow index row de la position initial (0-7)
+     * @param toCol index col de la position final (0-7)
+     * @param toRow index col de la position final (0-7)
+     */
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow){
         MovePieceResult result {};
-        Serial.print("Mouvement entré: ");
+
+        // Affiche le move entré
         char selectedFromColChar = 'A' + fromCol;
         int selectedFromRow = fromRow + 1;
         char selectedToColChar = 'A' + toCol;
         int selectedToRow = toRow + 1;
 
+        Serial.print("Mouvement entré: ");
         String textMove = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"] à ["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
         Serial.println(textMove);
-        //Serial.print("\033[0m");
 
-        // Check si les position sont dans le range 0-8
+        // Check if the index are in the 0-7 range
         if(!isInsideBoard(fromRow, fromCol) || !isInsideBoard(toRow, toCol)){
             result.setErreur(Erreur::OUTSIDE_BOARD);
             return result;
         }
 
+        // Store piece position
         SinglePosition fromPosition = board[fromRow][fromCol].pos;
         SinglePosition toPosition = board[toRow][toCol].pos;
+        bool isPawnOnDest = !toPosition.isEmpty();
 
         // Check if there is a piece, from pos
         if(fromPosition.isEmpty()){
@@ -94,13 +109,25 @@ namespace CHESS
         switchTurn();
 
         result.setSuccess();
+        result.isPawnOnDest = isPawnOnDest;
         return result;
     }
 
+    /**
+     * @brief Check if a piece is in the board
+     * 
+     * @param row row to check
+     * @param col col to check
+     * @return true if the position is valid
+     * @return false if the position is invalid
+     */
     bool isInsideBoard(int row, int col) {
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
+    /**
+     * @brief Serial print the board
+     */
     void printBoard() {
         Serial.println();
         for (int r = 0; r < 8; ++r) {
@@ -122,6 +149,12 @@ namespace CHESS
         Serial.println();
     }
 
+    /**
+     * @brief Serial print an individual piece
+     * 
+     * @param col of the piece
+     * @param row of the piece
+     */
     void printPiece(int col, int row){
         SinglePosition position = board[row][col].pos;
         Piece piece = position.piece;
@@ -171,6 +204,10 @@ namespace CHESS
         //Serial.print("\033[0m");
     }
 
+    /**
+     * @brief Serial print the current player
+     * 
+     */
     void printCurrentPlayer(){
         Serial.print("Au tour de: ");
         Serial.println(currentTurnPlayer == Player::WHITE ? "Blanc" : "Noir");
@@ -178,6 +215,12 @@ namespace CHESS
         //Serial.print("\033[0m");
     }
 
+    /**
+     * @brief Get the error message string
+     * 
+     * @param erreur to get the string from
+     * @return String of the error
+     */
     String getErrorMessage(Erreur erreur){
         switch (erreur) {
             case Erreur::OUTSIDE_BOARD:
@@ -193,18 +236,14 @@ namespace CHESS
         }
     }
 
+    /**
+     * @brief Change the current turn
+     */
     void switchTurn(){
         if(currentTurnPlayer == Player::WHITE){
             currentTurnPlayer = Player::BLACK;
         }else{
             currentTurnPlayer = Player::WHITE;
         }
-    }
-
-    // A-H -> 0-7
-    int colCharToIndex(char c) {
-        if (c >= 'A' && c <= 'H') return c - 'A';
-        if (c >= 'a' && c <= 'h') return c - 'a';
-        return -1;
     }
 }

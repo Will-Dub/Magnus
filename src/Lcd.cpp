@@ -203,6 +203,9 @@ namespace LCD
         lcd.write(byte(7));
     }
 
+    /**
+     * @brief Flash the screen where the cursor is
+     */
     void tickBlinkChessBoard(){
         unsigned long now = millis();
         if(now - lastBlinkTime >= BLINK_TIME_MS){
@@ -225,6 +228,12 @@ namespace LCD
         }
     }
 
+    /**
+     * @brief Print a string on a line
+     * 
+     * @param text to print
+     * @param line to print on
+     */
     void print(String text, int line){
         if(line == 0){
             lcd.setCursor(0, 0);
@@ -236,6 +245,9 @@ namespace LCD
         lcd.print(text);
     }
 
+    /**
+     * @brief Clear the lcd screen
+     */
     void clear(){
         lcd.clear();
     }

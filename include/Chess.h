@@ -24,6 +24,7 @@ namespace CHESS{
     struct MovePieceResult {
         bool isSuccess;
         Erreur erreur;
+        int isPawnOnDest;
         void setErreur(Erreur erreurP) { isSuccess = false; erreur=erreurP; }
         void setSuccess() { isSuccess = true; erreur=Erreur::AUCUN; }
     };
@@ -37,5 +38,4 @@ namespace CHESS{
     void printCurrentPlayer();
     String getErrorMessage(Erreur erreur);
     void switchTurn();
-    int colCharToIndex(char c);
 }

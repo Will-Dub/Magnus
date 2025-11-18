@@ -1,10 +1,6 @@
 #include "Menu.h"
 
 namespace MENU {
-    char selectedFromColChar = 'A';
-    int selectedFromRow = 1;
-    char selectedToColChar = 'A';
-    int selectedToRow = 1;
     int currentHorizontalIndex = 0;
     int currentVerticalIndex = 0;
     bool isOkPressedFlag = false;
@@ -67,30 +63,29 @@ namespace MENU {
         // Dialogue: De
         reset();
         LCD::print("De:");
-        int colIndex = 0;
-        int rowIndex = 0;
+        int fromColIndex = 0;
+        int fromRowIndex = 0;
         int oldColIndex = 0;
         int oldRowIndex = 0;
-        LCD::blinkChessBoard(colIndex, rowIndex);
+        LCD::blinkChessBoard(fromColIndex, fromRowIndex);
 
         while(!isOkPressedFlag){
             // Met à jour l'index
-            colIndex = ((currentHorizontalIndex % 8) + 8) % 8;
-            rowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            fromColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+            fromRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
 
             // Met à jour le chess board
-            if(oldColIndex != colIndex || oldRowIndex != rowIndex){
-                LCD::blinkChessBoard(colIndex, rowIndex);
-                oldColIndex = colIndex;
-                oldRowIndex = rowIndex;
+            if(oldColIndex != fromColIndex || oldRowIndex != fromRowIndex){
+                LCD::blinkChessBoard(fromColIndex, fromRowIndex);
+                oldColIndex = fromColIndex;
+                oldRowIndex = fromRowIndex;
             }
 
-            selectedFromColChar = 'A' + colIndex;
-            selectedFromRow = rowIndex + 1;
-
-            //blinkChar(String(selectedFromColChar) + String(selectedFromRow));
-            String text = "["+String(selectedFromColChar)+"]" + "["+String(selectedFromRow)+"]";
+            // Affiche le mouvement
+            String text = "["+String('A' + fromColIndex)+"]" + "["+String(fromRowIndex + 1)+"]";
             LCD::print(text,1);
+
+            // Update le lcd et les boutons
             tick();
             LCD::tickBlinkChessBoard();
         }
@@ -98,27 +93,27 @@ namespace MENU {
         // Dialogue: À
         reset();
         LCD::print("A:");
-        colIndex = 0;
-        rowIndex = 0;
-        LCD::blinkChessBoard(colIndex, rowIndex);
+        int toColIndex = 0;
+        int toRowIndex = 0;
+        LCD::blinkChessBoard(toColIndex, toRowIndex);
 
         while(!isOkPressedFlag){
             // Met à jour col ou row
-            colIndex = ((currentHorizontalIndex % 8) + 8) % 8;
-            rowIndex = ((currentVerticalIndex % 8) + 8) % 8;
+            toColIndex = ((currentHorizontalIndex % 8) + 8) % 8;
+            toRowIndex = ((currentVerticalIndex % 8) + 8) % 8;
 
             // Met à jour le chess board
-            if(oldColIndex != colIndex || oldRowIndex != rowIndex){
-                LCD::blinkChessBoard(colIndex, rowIndex);
-                oldColIndex = colIndex;
-                oldRowIndex = rowIndex;
+            if(oldColIndex != toColIndex || oldRowIndex != toRowIndex){
+                LCD::blinkChessBoard(toColIndex, toRowIndex);
+                oldColIndex = toColIndex;
+                oldRowIndex = toRowIndex;
             }
 
-            selectedToColChar = 'A' + colIndex;
-            selectedToRow = rowIndex + 1;
-            //blinkChar(String(selectedToColChar) + String(selectedToRow));
-            String text = "["+String(selectedToColChar)+"]" + "["+String(selectedToRow)+"]";
+            // Affiche le mouvement
+            String text = "["+String('A' + toColIndex)+"]" + "["+String(toRowIndex + 1)+"]";
             LCD::print(text,1);
+
+            // Update le lcd et les boutons
             tick();
             LCD::tickBlinkChessBoard();
         }
@@ -138,10 +133,10 @@ namespace MENU {
         }
 
         MENU::MoveInput input;
-        input.fromCol = selectedFromColChar;
-        input.fromRow = selectedFromRow;
-        input.toCol = selectedToColChar;
-        input.toRow = selectedToRow;
+        input.fromColIndex = fromColIndex;
+        input.fromRowIndex = fromRowIndex;
+        input.toColIndex = toColIndex;
+        input.toRowIndex = toRowIndex;
         input.giveUp = false;
         return input;
     }

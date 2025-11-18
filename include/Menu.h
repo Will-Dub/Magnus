@@ -5,10 +5,10 @@
 
 namespace MENU {
     struct MoveInput {
-        char fromCol;
-        int fromRow;
-        char toCol;
-        int toRow;
+        int fromColIndex;
+        int fromRowIndex;
+        int toColIndex;
+        int toRowIndex;
         bool giveUp;
     };
 

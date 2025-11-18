@@ -36,7 +36,6 @@ namespace CHESS_MOVEMENT
     void moveFromSquareToBlack(int currentCol, int currentRow);
     void moveFromSquareToWhite(int currentCol, int currentRow);
     void moveFromDropOffToSquare(int destCol, int destRow);
-    // TODO:
     void moveSquareToSquare(int currentCol, int currentRow, int destCol, int destRow);
     void moveFromSquareToDropOff(int currentCol, int currentRow);
     void moveFromDropOffToWhite();
