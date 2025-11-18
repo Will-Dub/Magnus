@@ -303,6 +303,18 @@ namespace CHESS_MOVEMENT{
         MOVEMENT::moveUntilLine();
     }
 
+    void moveFromBlackToWhite(){
+        MOVEMENT::turnLeft(125);
+        MOVEMENT::turnLeftUntilLine();
+
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(8);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+
+        MOVEMENT::turnLeft(125);
+        MOVEMENT::turnLeftUntilLine();
+    }
+
     void waitEndMoveByEndLine(){
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
             LINE::vCourseCorrection();

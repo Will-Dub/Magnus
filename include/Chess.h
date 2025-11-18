@@ -25,6 +25,7 @@ namespace CHESS{
         bool isSuccess;
         Erreur erreur;
         int isPawnOnDest;
+        Player player;
         void setErreur(Erreur erreurP) { isSuccess = false; erreur=erreurP; }
         void setSuccess() { isSuccess = true; erreur=Erreur::AUCUN; }
     };
@@ -38,4 +39,5 @@ namespace CHESS{
     void printCurrentPlayer();
     String getErrorMessage(Erreur erreur);
     void switchTurn();
+    Player getCurrentTurn();
 }
