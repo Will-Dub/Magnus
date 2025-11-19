@@ -32,16 +32,16 @@ namespace CHESS_MOVEMENT
 
     // COL et ROW doivent être entre 0-7
     void moveSquareToSquare(int currentCol, int currentRow, int destCol, int destRow);
-    
+    void moveFromSquareToWhite(int currentCol, int currentRow);
+    void moveFromDropOffToSquare(int destCol, int destRow);
+
     //TESTER
-    void moveFromWhiteToSquare(int destCol, int destRow);
     void moveFromSquareToDropOff(int currentCol, int currentRow);
+    void moveFromWhiteToSquare(int destCol, int destRow);
     void moveFromDropOffToWhite();
     void moveFromBlackToWhite();
     void moveFromBlackToSquare(int destCol, int destRow);
     void moveFromSquareToBlack(int currentCol, int currentRow);
-    void moveFromSquareToWhite(int currentCol, int currentRow);
-    void moveFromDropOffToSquare(int destCol, int destRow);
 
     void waitEndMoveByLineNb(int nbLine);
     void waitEndMoveByEndLine();

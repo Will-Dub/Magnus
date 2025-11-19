@@ -21,9 +21,7 @@ void setup() {
     LCD::initLcd();
     magSetup();
     armOn();
-    CHESS_MOVEMENT::moveFromWhiteToSquare(0,0);
-    CHESS_MOVEMENT::moveSquareToSquare(0,0,0,3);
-    CHESS_MOVEMENT::moveFromSquareToBlack(0,3);
+    CHESS_MOVEMENT::moveFromSquareToWhite(0,0);
     delay(100000);
 }
 

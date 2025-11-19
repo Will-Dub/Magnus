@@ -12,6 +12,7 @@ namespace CHESS_MOVEMENT{
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - destCol);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnRight(65);
             MOVEMENT::turnRightUntilLine(true);
@@ -20,7 +21,8 @@ namespace CHESS_MOVEMENT{
             MOVEMENT::turnRightUntilLine(true);
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-            waitEndMoveByLineNb(destCol - 3);
+            waitEndMoveByLineNb(destCol - 4);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnLeft(65);
             MOVEMENT::turnLeftUntilLine(true);
@@ -40,6 +42,7 @@ namespace CHESS_MOVEMENT{
 
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(8-destRow);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         if(destCol < 4){
             MOVEMENT::turnRight(65);
@@ -47,6 +50,7 @@ namespace CHESS_MOVEMENT{
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - destCol);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnRight(65);
             MOVEMENT::turnRightUntilLine(true);
@@ -56,16 +60,15 @@ namespace CHESS_MOVEMENT{
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destCol - 4);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnLeft(65);
-            MOVEMENT::turnLeftUntilLine(true);
-        }else{
-            MOVEMENT::turnLeft(135);
             MOVEMENT::turnLeftUntilLine(true);
         }
 
         // Avance jusqu'au milieu
-        MOVEMENT::moveUntilLine();
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(1);
     }
     
     void moveFromSquareToDropOff(int currentCol, int currentRow){
@@ -73,12 +76,13 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::turnLeft(135);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+        MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
 
         // Ce rend SUR la première ligne
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(currentCol+1);
+        waitEndMoveByLineNb(currentCol);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         MOVEMENT::turnLeft(45);
         MOVEMENT::turnLeftUntilLine(true);
@@ -145,10 +149,11 @@ namespace CHESS_MOVEMENT{
 
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(8 - currentRow);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         
         // Va à la ligne du milieu
         if(currentCol < 4){
-            MOVEMENT::turnRight(45);
+            MOVEMENT::turnRight(65);
             MOVEMENT::turnRightUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
@@ -158,7 +163,7 @@ namespace CHESS_MOVEMENT{
             MOVEMENT::turnRight(65);
             MOVEMENT::turnRightUntilLine(true);
         }else if(currentCol > 4){
-            MOVEMENT::turnLeft(45);
+            MOVEMENT::turnLeft(65);
             MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
@@ -179,30 +184,35 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+        MOVEMENT::turnLeft(135);
+        MOVEMENT::turnLeftUntilLine(true);
+
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(8 - currentRow);
+        waitEndMoveByLineNb(currentRow + 1);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         
         // Va à la ligne du milieu
         if(currentCol < 4){
-            MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine(true);
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - currentCol);
             MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
+        }else if(currentCol > 4){
             MOVEMENT::turnRight(65);
             MOVEMENT::turnRightUntilLine(true);
-        }else if(currentCol > 4){
-            MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(currentCol - 4);
             MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-            MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine(true);
+            MOVEMENT::turnRight(65);
+            MOVEMENT::turnRightUntilLine(true);
         }else{
             // Tourne à dos(180 degree)
             MOVEMENT::turnLeft(135);
