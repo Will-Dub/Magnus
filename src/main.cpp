@@ -21,8 +21,10 @@ void setup() {
     LCD::initLcd();
     magSetup();
     armOn();
-    //CHESS_MOVEMENT::moveFromSquareToDropOff(7,0);
-    //delay(1000000);
+    CHESS_MOVEMENT::moveFromWhiteToSquare(0,0);
+    CHESS_MOVEMENT::moveSquareToSquare(0,0,0,3);
+    CHESS_MOVEMENT::moveFromSquareToBlack(0,3);
+    delay(100000);
 }
 
 void loop() {
@@ -66,7 +68,7 @@ void loop() {
     LCD::print("EN COURS...");
     delay(1000);
     // Capture move
-    /*if (result.isPawnOnDest) 
+    if (result.isPawnOnDest) 
     {
         // Collect the pice and drop it off
         if (isWhitePlaying)
@@ -109,6 +111,6 @@ void loop() {
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
     }
-    */
+    
     isPreviousMoveInvalid = false;
 }

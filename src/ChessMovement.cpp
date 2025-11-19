@@ -13,16 +13,16 @@ namespace CHESS_MOVEMENT{
         }
 
         if(destCol <= 3){
-            MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - destCol);
 
             MOVEMENT::turnRight(85);
         }else if(destCol >= 4){
-            MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRight(65);
+            MOVEMENT::turnRightUntilLine(true);
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destCol - 3);
@@ -39,13 +39,15 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(8 - destRow);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        if(destRow != 7){
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(8 - destRow);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+        }
 
         if(destCol <= 3){
             MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRightUntilLine(true);
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - destCol);
@@ -53,7 +55,7 @@ namespace CHESS_MOVEMENT{
             MOVEMENT::turnRight(85);
         }else if(destCol >= 4){
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
             
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destCol - 3);
@@ -117,27 +119,23 @@ namespace CHESS_MOVEMENT{
 
         // Assume que le robot regarde l'est
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destRow);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
-        MOVEMENT::turnLeft(45);
-        MOVEMENT::turnLeftUntilLine();
+        waitEndMoveByLineNb(destCol+1);
 
         // Ce rend SUR la ligne
         if(destRow != 0){
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destRow);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+            MOVEMENT::turnRight(65);
+            MOVEMENT::turnRightUntilLine(true);
         }
 
-        // Tourne pour regarder l'EST
-        MOVEMENT::turnRight(45);
-        MOVEMENT::turnRightUntilLine();
-
-        // Avance jusqu'au milieu de la case
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destCol+1);
+        waitEndMoveByLineNb(1);
 
-        // Tourne pour regarder le NORD
         MOVEMENT::turnLeft(85);
 
         // Avance jusqu'au milieu
@@ -149,39 +147,39 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         
         // Va à la ligne du milieu
         if(currentCol <= 3){
             MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRightUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - currentCol);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
         }else{
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(currentCol - 3);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRightUntilLine(true);
         }
 
         // Va devant le joueur
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(7 - currentRow);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         // Tourne à dos(180 degree)
-        MOVEMENT::turnLeft(125);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeft(135);
+        MOVEMENT::turnLeftUntilLine(true);
     }
 
     void moveFromSquareToWhite(int currentCol, int currentRow){
@@ -189,39 +187,39 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         
         // Va à la ligne du milieu
         if(currentCol <= 3){
             MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRightUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(4 - currentCol);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRightUntilLine(true);
         }else{
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(currentCol - 3);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
         }
 
         // Va devant le joueur
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(currentRow + 1);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         // Tourne à dos(180 degree)
-        MOVEMENT::turnLeft(125);
-        MOVEMENT::turnLeftUntilLine();
+        MOVEMENT::turnLeft(135);
+        MOVEMENT::turnLeftUntilLine(true);
     }
 
     void moveSquareToSquare(int currentCol, int currentRow, int destCol, int destRow){
@@ -229,68 +227,68 @@ namespace CHESS_MOVEMENT{
             return;
         }
 
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         if(currentCol >= destCol){
             MOVEMENT::turnLeft(45);
-            MOVEMENT::turnLeftUntilLine();
+            MOVEMENT::turnLeftUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(currentCol - destCol + 1);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             if(destRow > currentRow+1){
-                MOVEMENT::turnRight(45);
-                MOVEMENT::turnRightUntilLine();
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(destRow - currentRow - 1);
-                MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-                MOVEMENT::turnRight(45);
-                MOVEMENT::turnRightUntilLine();
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
             }else if(destRow <= currentRow){
-                MOVEMENT::turnLeft(45);
-                MOVEMENT::turnLeftUntilLine();
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(currentRow - destRow + 1);
-                MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-                MOVEMENT::turnLeft(45);
-                MOVEMENT::turnLeftUntilLine();
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
             }else{
                 MOVEMENT::turnRight(125);
-                MOVEMENT::turnRightUntilLine();
+                MOVEMENT::turnRightUntilLine(true);
             }
         }else{
-            MOVEMENT::turnRight(45);
-            MOVEMENT::turnRightUntilLine();
+            MOVEMENT::turnRight(65);
+            MOVEMENT::turnRightUntilLine(true);
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destCol - currentCol);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             if(destRow > currentRow+1){
-                MOVEMENT::turnLeft(45);
-                MOVEMENT::turnLeftUntilLine();
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(destRow - currentRow - 1);
-                MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-                MOVEMENT::turnRight(45);
-                MOVEMENT::turnRightUntilLine();
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
             }else if(destRow <= currentRow){
-                MOVEMENT::turnRight(45);
-                MOVEMENT::turnRightUntilLine();
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(currentRow - destRow + 1);
-                MOVEMENT::moveForward(ROBUS_RADIUS_CM);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-                MOVEMENT::turnLeft(45);
-                MOVEMENT::turnLeftUntilLine();
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
             }else{
                 // Face déjà l'EST
             }
