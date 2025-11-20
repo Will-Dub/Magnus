@@ -30,9 +30,6 @@ namespace CHESS_MOVEMENT{
 
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(destRow+1);
-
-        // Avance jusqu'au milieu
-        MOVEMENT::moveUntilLine();
     }
 
     void moveFromBlackToSquare(int destCol, int destRow){
@@ -124,22 +121,20 @@ namespace CHESS_MOVEMENT{
         // Assume que le robot regarde l'est
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(destCol+1);
+        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+        MOVEMENT::turnLeft(65);
+        MOVEMENT::turnLeftUntilLine(true);
 
         // Ce rend SUR la ligne
         if(destRow != 0){
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-            MOVEMENT::turnLeft(65);
-            MOVEMENT::turnLeftUntilLine(true);
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(destRow);
             MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-        }else{
-            MOVEMENT::turnLeft(65);
-            MOVEMENT::turnLeftUntilLine(true);
         }
 
         // Avance jusqu'au milieu
-        MOVEMENT::moveUntilLine();
+        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+        waitEndMoveByLineNb(1);
     }
 
     void moveFromSquareToBlack(int currentCol, int currentRow){
