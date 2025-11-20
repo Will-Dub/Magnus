@@ -9,11 +9,8 @@
 namespace LINE{
     constexpr int WHITE_THRESHOLD = 980;
 
-    enum StationEnum { NONE, WALL_DODGE, LOSANGE, LOST_LINE, QUILLE};
-
     void vSetupLineSensors();
     unsigned char ucReadLineSensors();
     void vCourseCorrection();
-    StationEnum ucDecideStation();
 
 }

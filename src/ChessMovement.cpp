@@ -81,7 +81,7 @@ namespace CHESS_MOVEMENT{
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
         waitEndMoveByLineNb(currentCol);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
 
         // Avance au dropoff
@@ -101,7 +101,7 @@ namespace CHESS_MOVEMENT{
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         // Tourne pour être à dos au joueur
-        MOVEMENT::turnLeft(45);
+        MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
     }
 
@@ -157,7 +157,7 @@ namespace CHESS_MOVEMENT{
             waitEndMoveByLineNb(currentCol - 4);
             MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-            MOVEMENT::turnLeft(45);
+            MOVEMENT::turnLeft(65);
             MOVEMENT::turnLeftUntilLine(true);
         }else{
             // Tourne à dos(180 degree)
@@ -287,17 +287,23 @@ namespace CHESS_MOVEMENT{
 
     void waitEndMoveByLineNb(int nbLine){
         int detectedLines = 0;
+        int detectedLineReadCount = 0;
         bool oldWasOnAllLine = false;
 
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
             LINE::vCourseCorrection();
             MOVEMENT::runMovementController();
 
-            if(!oldWasOnAllLine && LINE::ucReadLineSensors() == 0b111){
+            if(LINE::ucReadLineSensors() == 0b111){
+                detectedLineReadCount++;
+            }else{
+                detectedLineReadCount = 0;
+                oldWasOnAllLine = false;
+            }
+
+            if(!oldWasOnAllLine && detectedLineReadCount >= MIN_DETECTED_LINE_READ_COUNT){
                 detectedLines++;
                 oldWasOnAllLine = true;
-            }else if(LINE::ucReadLineSensors() != 0b111){
-                oldWasOnAllLine = false;
             }
 
             if(detectedLines >= nbLine){

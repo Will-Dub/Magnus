@@ -7,6 +7,7 @@ namespace CHESS_MOVEMENT
 {
     const float MAX_MOVE_DISTANCE = 99999;
     const float ROBUS_RADIUS_CM = 19.5f/2;
+    const int MIN_DETECTED_LINE_READ_COUNT = 3;
 
     //                 [BLACK]
     //    --------------------------------- 

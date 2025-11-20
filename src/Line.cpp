@@ -2,7 +2,6 @@
 #include <Arduino.h>
 
 namespace LINE{
-    StationEnum ucStation = NONE;
 
     void vSetupLineSensors()
     {
@@ -34,61 +33,36 @@ namespace LINE{
         unsigned char ucSensorState = ucReadLineSensors();
         switch (ucSensorState) {
             case 0b000:
-                Serial.println("No line detected");
-                if (ucStation == StationEnum::NONE) {/* LOST THE LINE, SWEEPING TO FIND IT AGAIN */ }
+                // No line
                 break; 
             case 0b001:
-                Serial.println("Right sensor on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_DROITE);
-                }
+                // Right sensor on line
+                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_DROITE);
                 break;
             case 0b010:
-                Serial.println("Middle sensor on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                }
+                // Middle sensor on line
+                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
                 break;
             case 0b011:
-                Serial.println("Middle and Right sensor on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_DROITE);
-                }
+                // Middle and right on line
                 MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_DROITE);
                 break;
             case 0b100:
-                Serial.println("Left sensor on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_GAUCHE);
-                }
+                // Left sensor on line
                 MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_GAUCHE);
                 break;
             case 0b101:
-                Serial.println("Left and Right sensor on line");
+                // Left and right on line
                 //IDK THATS FUCKED UP G, GO STRAIGHT I GUESS
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                }
                 MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
                 break;
             case 0b110:
-                Serial.println("Left and Middle sensor on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_GAUCHE);
-                }
+                // Left and middle on line
+                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_GAUCHE);
                 break;
             case 0b111:
-                Serial.println("All sensors on line");
-                if (ucStation == StationEnum::NONE)
-                {
-                    MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                }
+                // All on line
+                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
                 break;
             default:
                 Serial.println("Error: 0_0 au secours!");
