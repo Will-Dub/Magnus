@@ -141,6 +141,13 @@ namespace MOVEMENT {
                 }
 
                 if (conditionMet || linePoolCount >= 3) {
+                    // Align to be in the middle
+                    if(waitUntilRightOut && !waitUntilLeftOut){
+                        MOVEMENT::turnRight(5);
+                    }else if(!waitUntilRightOut && waitUntilLeftOut){
+                        MOVEMENT::turnLeft(5);
+                    }
+
                     stop();
                 }
             }

@@ -89,23 +89,15 @@ namespace CHESS_MOVEMENT{
         waitEndMoveByLineNb(currentRow+1);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
-        //Tourne vers la zone
-        MOVEMENT::turnRight(65);
-        MOVEMENT::turnRightUntilLine(true);
-
-        // Avance au dropoff
-        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByEndLine();
-
-        // Tourne jusqu'a la ligne(180) pour regarder l'OUEST
-        MOVEMENT::turnLeft(135);
+        //Tourne pour être vers l'est
+        MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
     }
 
     void moveFromDropOffToWhite(){
         // Ce rend devant le joueur blanc
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(5);
+        waitEndMoveByLineNb(4);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
         // Tourne pour être à dos au joueur
@@ -120,7 +112,7 @@ namespace CHESS_MOVEMENT{
 
         // Assume que le robot regarde l'est
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destCol+1);
+        waitEndMoveByLineNb(destCol);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
@@ -291,26 +283,6 @@ namespace CHESS_MOVEMENT{
 
         MOVEMENT::turnLeft(155);
         MOVEMENT::turnLeftUntilLine(true);
-    }
-
-    void waitEndMoveByEndLine(){
-        int countOutside = 0;
-        while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
-            LINE::vCourseCorrection();
-            MOVEMENT::runMovementController();
-
-            if(LINE::ucReadLineSensors() == 0b000){
-                countOutside++;
-            }else{
-                countOutside = 0;
-            }
-
-            if(countOutside >= 35){
-                MOVEMENT::stop();
-            }
-            
-            delay(2);
-        }
     }
 
     void waitEndMoveByLineNb(int nbLine){
