@@ -64,24 +64,28 @@ void loop() {
     LCD::print("EN COURS...");
     delay(1000);
     // Capture move
-    /*if (result.isPawnOnDest) 
+    if (result.isPawnOnDest) 
     {
         // Collect the pice and drop it off
         if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.toColIndex, moveInput.toRowIndex);
+        pickup();
 
         CHESS_MOVEMENT::moveFromSquareToDropOff(moveInput.toColIndex, moveInput.toRowIndex);
+        place();
 
         // Move to the from square
         CHESS_MOVEMENT::moveFromDropOffToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+        pickup();
 
         // Move to the to square
         CHESS_MOVEMENT::moveSquareToSquare(
             moveInput.fromColIndex, moveInput.fromRowIndex,
             moveInput.toColIndex,   moveInput.toRowIndex
         );
+        place();
 
         // Return
         if (isWhitePlaying)
@@ -96,17 +100,19 @@ void loop() {
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+        pickup();
 
         CHESS_MOVEMENT::moveSquareToSquare(
             moveInput.fromColIndex, moveInput.fromRowIndex,
             moveInput.toColIndex,   moveInput.toRowIndex
         );
+        place();
 
         if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
-    }*/
+    }
     
     isPreviousMoveInvalid = false;
 }

@@ -74,15 +74,21 @@ namespace CHESS_MOVEMENT{
         }
 
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-        MOVEMENT::turnLeft(65);
-        MOVEMENT::turnLeftUntilLine(true);
 
-        // Ce rend SUR la première ligne
-        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(currentCol);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-        MOVEMENT::turnLeft(65);
-        MOVEMENT::turnLeftUntilLine(true);
+        if(currentCol != 0){
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
+
+            // Ce rend SUR la première ligne
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(currentCol);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+            MOVEMENT::turnLeft(65);
+            MOVEMENT::turnLeftUntilLine(true);
+        }else{
+            MOVEMENT::turnLeft(135);
+            MOVEMENT::turnLeftUntilLine(true);
+        }
 
         // Avance au dropoff
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
