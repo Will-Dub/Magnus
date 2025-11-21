@@ -12,6 +12,9 @@ const int angleLow = 0;
 //numéro de la pin qui contrôle l'électroaimant
 const int magnet = 49;
 
+//temps de délai pour l'aimant
+const int magdelay = 1000;
+
 //initialise l'aimant
 void magSetup(){
     pinMode(magnet,OUTPUT);
@@ -63,6 +66,7 @@ void magnetOff(){
 void pickup(){
     armDown();
     magnetOn();
+    delay(magdelay);
     armUp();
 }
 
@@ -70,5 +74,6 @@ void pickup(){
 void place(){
     armDown();
     magnetOff();
+    delay(magdelay);
     armUp();
 }
