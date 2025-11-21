@@ -20,12 +20,6 @@ void setup() {
     MENU::init();
     LCD::initLcd();
     magSetup();
-    armOn();
-    magnetOn();
-    //delay(5000);
-    //magnetOff();
-    //CHESS_MOVEMENT::moveFromSquareToWhite(0,0)
-    //delay(100000);
 }
 
 void loop() {
@@ -45,6 +39,7 @@ void loop() {
     // Execute the move
     if(moveInput.giveUp){
         isGameStarted = false;
+        isPreviousMoveInvalid = false;
         MENU::waitForLoseAck();
 
         if(!isWhitePlaying){

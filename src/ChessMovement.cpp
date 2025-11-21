@@ -111,22 +111,19 @@ namespace CHESS_MOVEMENT{
         }
 
         // Assume que le robot regarde l'est
-        MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(destCol);
-        MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+
+        if(destCol != 0){
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(destCol);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+        }
+
         MOVEMENT::turnLeft(65);
         MOVEMENT::turnLeftUntilLine(true);
 
         // Ce rend SUR la ligne
-        if(destRow != 0){
-            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-            waitEndMoveByLineNb(destRow);
-            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
-        }
-
-        // Avance jusqu'au milieu
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(1);
+        waitEndMoveByLineNb(destRow+1);
     }
 
     void moveFromSquareToBlack(int currentCol, int currentRow){
@@ -220,6 +217,7 @@ namespace CHESS_MOVEMENT{
 
             MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             waitEndMoveByLineNb(1+currentRow-destRow);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             if(destCol < currentCol){
                 MOVEMENT::turnRight(65);
@@ -227,6 +225,7 @@ namespace CHESS_MOVEMENT{
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(currentCol-destCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
                 MOVEMENT::turnRight(65);
                 MOVEMENT::turnRightUntilLine(true);
@@ -235,7 +234,8 @@ namespace CHESS_MOVEMENT{
                 MOVEMENT::turnLeftUntilLine(true);
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-                waitEndMoveByLineNb(destCol-currentCol+1);
+                waitEndMoveByLineNb(destCol-currentCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
                 MOVEMENT::turnLeft(65);
                 MOVEMENT::turnLeftUntilLine(true);
@@ -243,10 +243,11 @@ namespace CHESS_MOVEMENT{
                 MOVEMENT::turnRight(135);
                 MOVEMENT::turnRightUntilLine(true);
             }
-        }else if(destRow >= currentRow){
-            if(destRow != currentRow){
+        }else if(destRow > currentRow){
+            if(destRow != currentRow + 1){
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-                waitEndMoveByLineNb(destRow-currentRow);
+                waitEndMoveByLineNb(destRow-currentRow-1);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
             }
 
             if(destCol < currentCol){
@@ -255,6 +256,7 @@ namespace CHESS_MOVEMENT{
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(currentCol-destCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
                 MOVEMENT::turnRight(65);
                 MOVEMENT::turnRightUntilLine(true);
@@ -264,6 +266,37 @@ namespace CHESS_MOVEMENT{
 
                 MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
                 waitEndMoveByLineNb(destCol-currentCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
+            }else{
+                // NOTHING its in front
+            }
+        }else{
+            MOVEMENT::turnLeft(135);
+            MOVEMENT::turnLeftUntilLine(true);
+            MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+            waitEndMoveByLineNb(1);
+            MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+
+            if(destCol < currentCol){
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
+
+                MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+                waitEndMoveByLineNb(currentCol-destCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
+
+                MOVEMENT::turnRight(65);
+                MOVEMENT::turnRightUntilLine(true);
+            }else if(destCol > currentCol){
+                MOVEMENT::turnLeft(65);
+                MOVEMENT::turnLeftUntilLine(true);
+
+                MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+                waitEndMoveByLineNb(destCol-currentCol);
+                MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
                 MOVEMENT::turnLeft(65);
                 MOVEMENT::turnLeftUntilLine(true);

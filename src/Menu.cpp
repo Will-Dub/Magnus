@@ -4,8 +4,6 @@ namespace MENU {
     int currentHorizontalIndex = 0;
     int currentVerticalIndex = 0;
     bool isOkPressedFlag = false;
-    bool isRightPressedFlag = false;
-    bool isUpPressedFlag = false;
 
     const int BLINK_TIME_MS = 500;
     unsigned long lastBlinkTime = 0;
@@ -14,7 +12,9 @@ namespace MENU {
     void init(){
         pinMode(PIN_OK_BUTTON, INPUT);
         pinMode(PIN_UP_BUTTON, INPUT);
+        pinMode(PIN_DOWN_BUTTON, INPUT);
         pinMode(PIN_RIGHT_BUTTON, INPUT);
+        pinMode(PIN_LEFT_BUTTON, INPUT);
     }
 
     void waitForGameStart() {
