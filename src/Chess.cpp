@@ -99,16 +99,31 @@ namespace CHESS
             return result;
         }
 
-        // TODO: check si le player est échec
-        // TODO: Check if the move is valid specific to pawn type
+        // Check spécifique pour le type de pion
+        if(!isMoveValidForPiece(board[fromRow][fromCol], toRow, toCol, !toPosition.isEmpty())){
+            result.setErreur(Erreur::INVALID_MOVE);
+            return result;
+        }
 
-        // Execute the move
+        // Check si joueur est échec
+        SinglePosition savedFrom = fromPosition;
+        SinglePosition savedTo = toPosition;
+
+        // Exécute temporairement
         board[fromRow][fromCol].pos.setEmpty();
-        board[toRow][toCol].pos.setPos(fromPosition);
+        board[toRow][toCol].pos.setPos(savedFrom);
 
-        // Change current player
+        // Vérifie si le roi est échec
+        if (isKingInCheck(currentTurnPlayer)) {
+            // Restore
+            board[fromRow][fromCol].pos.setPos(savedFrom);
+            board[toRow][toCol].pos = savedTo;
+
+            result.setErreur(Erreur::KING_CHECK);
+            return result;
+        }
+
         switchTurn();
-
         result.setSuccess();
         result.isPawnOnDest = isPawnOnDest;
         return result;
@@ -147,18 +162,18 @@ namespace CHESS
             int direction = (fromPosition.player == Player::WHITE ? 1 : -1);
             int startRow  = (fromPosition.player == Player::WHITE ? 1 : 6);
 
-            // Move forward 1
+            // Avance de 1
             if (dCol == 0 && dRow == direction && !targetHasEnemy)
                 return true;
 
-            // Move forward 2 from starting row
+            // Avance de 2
             if (dCol == 0 && dRow == 2 * direction && FROM_ROW == startRow) {
                 int midRow = FROM_ROW + direction;
                 if (board[midRow][FROM_COL].pos.isEmpty() && !targetHasEnemy)
                     return true;
             }
 
-            // Capture diagonally
+            // Diago
             if (abs(dCol) == 1 && dRow == direction && targetHasEnemy)
                 return true;
 
@@ -194,6 +209,41 @@ namespace CHESS
         default:
             return false;
         }
+    }
+
+    bool isKingInCheck(Player player)
+    {
+        int kingRow = -1, kingCol = -1;
+
+        // Trouver le roi
+        for(int r = 0; r < 8; r++){
+            for(int c = 0; c < 8; c++){
+                if(!board[r][c].pos.isEmpty() &&
+                board[r][c].pos.piece == Piece::KING &&
+                board[r][c].pos.player == player)
+                {
+                    kingRow = r;
+                    kingCol = c;
+                }
+            }
+        }
+
+        // Vérifier si une pièce ennemie peut attaquer
+        for(int r = 0; r < 8; r++){
+            for(int c = 0; c < 8; c++){
+                if(!board[r][c].pos.isEmpty() && board[r][c].pos.player != player)
+                {
+                    bool targetHasEnemy = true;
+
+                    if (isMoveValidForPiece(board[r][c], kingRow, kingCol, targetHasEnemy))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -315,6 +365,10 @@ namespace CHESS
                 return "Le pion ne vous appartient pas";
             case Erreur::EATING_OWN_PIECE:
                 return "Vous ne pouvez pas manger votre propre pion";
+            case Erreur::INVALID_MOVE:
+                return "Le mouvement avec le pion est invalide";
+            case Erreur::KING_CHECK:
+                return "Vous êtes échec";
             default:
                 return "Erreur inconnue";
         }

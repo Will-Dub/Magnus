@@ -5,7 +5,7 @@
 namespace CHESS{
     enum class Piece {PAWN, BISHOP, KNIGHT, ROOK, QUEEN, KING, NONE};
     enum class Player {NONE, WHITE, BLACK};
-    enum class Erreur {AUCUN, OUTSIDE_BOARD, NO_PIECE, OTHER_PLAYER_PIECE, EATING_OWN_PIECE};
+    enum class Erreur {AUCUN, OUTSIDE_BOARD, NO_PIECE, OTHER_PLAYER_PIECE, EATING_OWN_PIECE, INVALID_MOVE, KING_CHECK};
 
     struct SinglePosition{
         Piece piece;
@@ -40,6 +40,7 @@ namespace CHESS{
     String getErrorMessage(Erreur erreur);
     void switchTurn();
     Player getCurrentTurn();
+    bool isKingInCheck(Player player);
     bool isMoveValidForPiece(const BoardSquare& fromSquare, 
                          int toRow, int toCol,
                          bool targetHasEnemy);

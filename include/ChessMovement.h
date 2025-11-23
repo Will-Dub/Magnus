@@ -9,6 +9,8 @@ namespace CHESS_MOVEMENT
     const float ROBUS_RADIUS_CM = 19.5f/2;
     const int MIN_DETECTED_LINE_READ_COUNT = 3;
     const int MIN_OFF_LINE_BEFORE_NEXT = 45;
+    const int TURN_ANGLE = 75;
+    const int FULL_TURN_ANGLE = 155;
     
     //                 [BLACK]
     //    --------------------------------- 
@@ -47,4 +49,9 @@ namespace CHESS_MOVEMENT
 
     void waitEndMoveByLineNb(int nbLine);
     void waitEndMoveByEndLine();
+
+    inline void turnLeft();
+    inline void turnRight();
+    inline void fullTurn();
+    inline void moveByLineNb(int nbLine);
 }
