@@ -138,7 +138,7 @@ namespace CHESS_MOVEMENT{
         }
 
         MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
-        waitEndMoveByLineNb(8 - currentRow);
+        waitEndMoveByLineNb(7 - currentRow);
         MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
         
         // Va à la ligne du milieu
@@ -327,6 +327,7 @@ namespace CHESS_MOVEMENT{
     void waitEndMoveByLineNb(int nbLine){
         int detectedLines = 0;
         int detectedLineReadCount = 0;
+        int offLineCounter = 0;
         bool oldWasOnAllLine = false;
 
         while(MOVEMENT::getCurrentMove() != MOVEMENT::MoveEnum::NONE){
@@ -336,13 +337,21 @@ namespace CHESS_MOVEMENT{
             if(LINE::ucReadLineSensors() == 0b111){
                 detectedLineReadCount++;
             }else{
+                offLineCounter++;
                 detectedLineReadCount = 0;
                 oldWasOnAllLine = false;
             }
 
-            if(!oldWasOnAllLine && detectedLineReadCount >= MIN_DETECTED_LINE_READ_COUNT){
+            if (!oldWasOnAllLine
+                && detectedLineReadCount >= MIN_DETECTED_LINE_READ_COUNT
+                && offLineCounter >= MIN_OFF_LINE_BEFORE_NEXT)
+            {
+                offLineCounter = 0;
                 detectedLines++;
                 oldWasOnAllLine = true;
+                MOVEMENT::stop();
+                delay(250);
+                MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             }
 
             if(detectedLines >= nbLine){

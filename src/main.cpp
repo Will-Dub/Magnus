@@ -20,6 +20,17 @@ void setup() {
     MENU::init();
     LCD::initLcd();
     magSetup();
+
+    /*while(true){
+        MOVEMENT::moveForwardNonBlocking(999999);
+        CHESS_MOVEMENT::waitEndMoveByLineNb(1);
+        delay(1000);
+    }*/
+
+    /*while(true){
+        LINE::ucReadLineSensors();
+        delay(100);
+    }*/
 }
 
 void loop() {

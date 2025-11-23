@@ -40,4 +40,8 @@ namespace CHESS{
     String getErrorMessage(Erreur erreur);
     void switchTurn();
     Player getCurrentTurn();
+    bool isMoveValidForPiece(const BoardSquare& fromSquare, 
+                         int toRow, int toCol,
+                         bool targetHasEnemy);
+    
 }

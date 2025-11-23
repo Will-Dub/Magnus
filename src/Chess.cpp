@@ -114,6 +114,88 @@ namespace CHESS
         return result;
     }
 
+    bool isPathClear(int fromRow, int fromCol, int toRow, int toCol) {
+        int dRow = (toRow - fromRow);
+        int dCol = (toCol - fromCol);
+
+        int stepRow = (dRow == 0 ? 0 : (dRow > 0 ? 1 : -1));
+        int stepCol = (dCol == 0 ? 0 : (dCol > 0 ? 1 : -1));
+
+        int r = fromRow + stepRow;
+        int c = fromCol + stepCol;
+
+        while (r != toRow || c != toCol) {
+            if (!board[r][c].pos.isEmpty()) return false;
+            r += stepRow;
+            c += stepCol;
+        }
+        return true;
+    }
+
+    bool isMoveValidForPiece(const BoardSquare& fromSquare, 
+                         int toRow, int toCol,
+                         bool targetHasEnemy)
+    {
+        const int FROM_ROW = fromSquare.row;
+        const int FROM_COL = fromSquare.col;
+        const SinglePosition& fromPosition = fromSquare.pos;
+        int dRow = toRow - fromSquare.row;
+        int dCol = toCol - fromSquare.col;
+
+        switch (fromSquare.pos.piece) {
+        case Piece::PAWN: {
+            int direction = (fromPosition.player == Player::WHITE ? 1 : -1);
+            int startRow  = (fromPosition.player == Player::WHITE ? 1 : 6);
+
+            // Move forward 1
+            if (dCol == 0 && dRow == direction && !targetHasEnemy)
+                return true;
+
+            // Move forward 2 from starting row
+            if (dCol == 0 && dRow == 2 * direction && FROM_ROW == startRow) {
+                int midRow = FROM_ROW + direction;
+                if (board[midRow][FROM_COL].pos.isEmpty() && !targetHasEnemy)
+                    return true;
+            }
+
+            // Capture diagonally
+            if (abs(dCol) == 1 && dRow == direction && targetHasEnemy)
+                return true;
+
+            return false;
+        }
+
+        case Piece::ROOK:
+            if (dRow == 0 || dCol == 0)
+                return isPathClear(FROM_ROW, FROM_COL, toRow, toCol);
+            return false;
+
+        case Piece::KNIGHT:
+            if ((abs(dRow) == 2 && abs(dCol) == 1) ||
+                (abs(dRow) == 1 && abs(dCol) == 2))
+                return true;
+            return false;
+
+        case Piece::BISHOP:
+            if (abs(dRow) == abs(dCol))
+                return isPathClear(FROM_ROW, FROM_COL, toRow, toCol);
+            return false;
+
+        case Piece::QUEEN:
+            if (dRow == 0 || dCol == 0 || abs(dRow) == abs(dCol))
+                return isPathClear(FROM_ROW, FROM_COL, toRow, toCol);
+            return false;
+
+        case Piece::KING:
+            if (abs(dRow) <= 1 && abs(dCol) <= 1)
+                return true;
+            return false;
+
+        default:
+            return false;
+        }
+    }
+
     /**
      * @brief Check if a piece is in the board
      * 
