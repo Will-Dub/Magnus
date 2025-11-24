@@ -2,7 +2,7 @@
 
 namespace CHESS
 {
-    BoardSquare board[8][8];
+    Square board[8][8];
     Player currentTurnPlayer;
 
     /**
@@ -18,35 +18,35 @@ namespace CHESS
 
         // Pawns
         for (int c = 0; c < 8; ++c) {
-            board[1][c].pos = { Piece::PAWN, Player::WHITE };
-            board[6][c].pos = { Piece::PAWN, Player::BLACK };
+            board[1][c].position = { Piece::PAWN, Player::WHITE };
+            board[6][c].position = { Piece::PAWN, Player::BLACK };
         }
 
         // Rooks
-        board[0][0].pos = { Piece::ROOK, Player::WHITE };
-        board[0][7].pos = { Piece::ROOK, Player::WHITE };
-        board[7][0].pos = { Piece::ROOK, Player::BLACK };
-        board[7][7].pos = { Piece::ROOK, Player::BLACK };
+        board[0][0].position = { Piece::ROOK, Player::WHITE };
+        board[0][7].position = { Piece::ROOK, Player::WHITE };
+        board[7][0].position = { Piece::ROOK, Player::BLACK };
+        board[7][7].position = { Piece::ROOK, Player::BLACK };
 
         // Knights
-        board[0][1].pos = { Piece::KNIGHT, Player::WHITE };
-        board[0][6].pos = { Piece::KNIGHT, Player::WHITE };
-        board[7][1].pos = { Piece::KNIGHT, Player::BLACK };
-        board[7][6].pos = { Piece::KNIGHT, Player::BLACK };
+        board[0][1].position = { Piece::KNIGHT, Player::WHITE };
+        board[0][6].position = { Piece::KNIGHT, Player::WHITE };
+        board[7][1].position = { Piece::KNIGHT, Player::BLACK };
+        board[7][6].position = { Piece::KNIGHT, Player::BLACK };
 
         // Bishops
-        board[0][2].pos = { Piece::BISHOP, Player::WHITE };
-        board[0][5].pos = { Piece::BISHOP, Player::WHITE };
-        board[7][2].pos = { Piece::BISHOP, Player::BLACK };
-        board[7][5].pos = { Piece::BISHOP, Player::BLACK };
+        board[0][2].position = { Piece::BISHOP, Player::WHITE };
+        board[0][5].position = { Piece::BISHOP, Player::WHITE };
+        board[7][2].position = { Piece::BISHOP, Player::BLACK };
+        board[7][5].position = { Piece::BISHOP, Player::BLACK };
 
         // Queens
-        board[0][3].pos = { Piece::QUEEN, Player::WHITE };
-        board[7][3].pos = { Piece::QUEEN, Player::BLACK };
+        board[0][3].position = { Piece::QUEEN, Player::WHITE };
+        board[7][3].position = { Piece::QUEEN, Player::BLACK };
 
         // Kings
-        board[0][4].pos = { Piece::KING, Player::WHITE };
-        board[7][4].pos = { Piece::KING, Player::BLACK };
+        board[0][4].position = { Piece::KING, Player::WHITE };
+        board[7][4].position = { Piece::KING, Player::BLACK };
     }
 
     /**
@@ -78,8 +78,8 @@ namespace CHESS
         }
 
         // Store piece position
-        SinglePosition fromPosition = board[fromRow][fromCol].pos;
-        SinglePosition toPosition = board[toRow][toCol].pos;
+        Position fromPosition = board[fromRow][fromCol].position;
+        Position toPosition = board[toRow][toCol].position;
         bool isPawnOnDest = !toPosition.isEmpty();
 
         // Check if there is a piece, from pos
@@ -106,18 +106,18 @@ namespace CHESS
         }
 
         // Check si joueur est échec
-        SinglePosition savedFrom = fromPosition;
-        SinglePosition savedTo = toPosition;
+        Position savedFrom = fromPosition;
+        Position savedTo = toPosition;
 
         // Exécute temporairement
-        board[fromRow][fromCol].pos.setEmpty();
-        board[toRow][toCol].pos.setPos(savedFrom);
+        board[fromRow][fromCol].position.setEmpty();
+        board[toRow][toCol].position.setPosition(savedFrom);
 
         // Vérifie si le roi est échec
         if (isKingInCheck(currentTurnPlayer)) {
             // Restore
-            board[fromRow][fromCol].pos.setPos(savedFrom);
-            board[toRow][toCol].pos = savedTo;
+            board[fromRow][fromCol].position.setPosition(savedFrom);
+            board[toRow][toCol].position = savedTo;
 
             result.setErreur(Erreur::KING_CHECK);
             return result;
@@ -140,24 +140,24 @@ namespace CHESS
         int c = fromCol + stepCol;
 
         while (r != toRow || c != toCol) {
-            if (!board[r][c].pos.isEmpty()) return false;
+            if (!board[r][c].position.isEmpty()) return false;
             r += stepRow;
             c += stepCol;
         }
         return true;
     }
 
-    bool isMoveValidForPiece(const BoardSquare& fromSquare, 
+    bool isMoveValidForPiece(const Square& fromSquare, 
                          int toRow, int toCol,
                          bool targetHasEnemy)
     {
         const int FROM_ROW = fromSquare.row;
         const int FROM_COL = fromSquare.col;
-        const SinglePosition& fromPosition = fromSquare.pos;
+        const Position& fromPosition = fromSquare.position;
         int dRow = toRow - fromSquare.row;
         int dCol = toCol - fromSquare.col;
 
-        switch (fromSquare.pos.piece) {
+        switch (fromSquare.position.piece) {
         case Piece::PAWN: {
             int direction = (fromPosition.player == Player::WHITE ? 1 : -1);
             int startRow  = (fromPosition.player == Player::WHITE ? 1 : 6);
@@ -169,7 +169,7 @@ namespace CHESS
             // Avance de 2
             if (dCol == 0 && dRow == 2 * direction && FROM_ROW == startRow) {
                 int midRow = FROM_ROW + direction;
-                if (board[midRow][FROM_COL].pos.isEmpty() && !targetHasEnemy)
+                if (board[midRow][FROM_COL].position.isEmpty() && !targetHasEnemy)
                     return true;
             }
 
@@ -218,9 +218,9 @@ namespace CHESS
         // Trouver le roi
         for(int r = 0; r < 8; r++){
             for(int c = 0; c < 8; c++){
-                if(!board[r][c].pos.isEmpty() &&
-                board[r][c].pos.piece == Piece::KING &&
-                board[r][c].pos.player == player)
+                if(!board[r][c].position.isEmpty() &&
+                board[r][c].position.piece == Piece::KING &&
+                board[r][c].position.player == player)
                 {
                     kingRow = r;
                     kingCol = c;
@@ -231,7 +231,7 @@ namespace CHESS
         // Vérifier si une pièce ennemie peut attaquer
         for(int r = 0; r < 8; r++){
             for(int c = 0; c < 8; c++){
-                if(!board[r][c].pos.isEmpty() && board[r][c].pos.player != player)
+                if(!board[r][c].position.isEmpty() && board[r][c].position.player != player)
                 {
                     bool targetHasEnemy = true;
 
@@ -290,7 +290,7 @@ namespace CHESS
      * @param row of the piece
      */
     void printPiece(int col, int row){
-        SinglePosition position = board[row][col].pos;
+        Position position = board[row][col].position;
         Piece piece = position.piece;
 
         switch (position.player)

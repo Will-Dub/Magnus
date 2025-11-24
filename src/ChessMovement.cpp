@@ -47,6 +47,8 @@ namespace CHESS_MOVEMENT{
             MOVEMENT::moveForward(ROBUS_RADIUS_CM/2);
 
             turnLeft();
+        }else{
+            fullTurn();
         }
 
         // Avance jusqu'au milieu

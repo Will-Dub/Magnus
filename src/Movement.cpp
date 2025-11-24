@@ -110,49 +110,106 @@ namespace MOVEMENT {
     }
 
     void waitUntilLine(bool waitUntilRightOut, bool waitUntilLeftOut){
-        int linePoolCount = 0;
 
-        while(currentMove != MoveEnum::NONE){
-            runMovementController();
-            delay(2);
+    int linePoolCount = 0;
 
-            unsigned char lineState = LINE::ucReadLineSensors();
+    bool hasSeenLine = false;  // a-t-on déjà vu de la ligne ?
+ 
+    while(currentMove != MoveEnum::NONE){
 
-            if(lineState != 0){
-                bool rightOut = !(lineState & 0x01);
-                bool leftOut  = !(lineState & 0x04);
+        runMovementController();
 
-                bool conditionMet = false;
+        delay(2);
+ 
+        unsigned char lineState = LINE::ucReadLineSensors();
+ 
+        bool onAnyLine = (lineState != 0);
 
-                if (waitUntilRightOut && rightOut) {
-                    conditionMet = true;
-                }
+        bool rightOn   = (lineState & 0x01);
 
-                if (waitUntilLeftOut && leftOut) {
-                    conditionMet = true;
-                }
+        bool leftOn    = (lineState & 0x04);
+ 
+        bool rightOut = !rightOn;
 
-                if (waitUntilRightOut && waitUntilLeftOut) {
-                    conditionMet = rightOut && leftOut;
-                }
+        bool leftOut  = !leftOn;
+ 
+        // Mode "simple" : on arrête dès qu'on voit de la ligne un certain nb de fois
 
-                if(!waitUntilRightOut && !waitUntilLeftOut){
-                    linePoolCount++;
-                }
+        if(!waitUntilRightOut && !waitUntilLeftOut){
 
-                if (conditionMet || linePoolCount >= 3) {
-                    // Align to be in the middle
-                    if(waitUntilRightOut && !waitUntilLeftOut){
-                        MOVEMENT::turnRight(13);
-                    }else if(!waitUntilRightOut && waitUntilLeftOut){
-                        MOVEMENT::turnLeft(13);
-                    }
+            if(onAnyLine){
+
+                linePoolCount++;
+
+                if(linePoolCount >= 3){
 
                     stop();
+
                 }
+
+            }else{
+
+                linePoolCount = 0;
+
             }
+
+            continue;
+
         }
+ 
+        // Mode "waitUntilRightOut / LeftOut"
+
+        if(onAnyLine){
+
+            hasSeenLine = true; // on est passé sur la ligne au moins une fois
+
+        }
+ 
+        // On ne teste la sortie que si on a DÉJÀ vu la ligne
+
+        if(hasSeenLine){
+
+            bool conditionMet = false;
+ 
+            if(waitUntilRightOut && !waitUntilLeftOut){
+
+                conditionMet = rightOut;       // capteur droit n'est plus sur la ligne
+
+            }else if(!waitUntilRightOut && waitUntilLeftOut){
+
+                conditionMet = leftOut;        // capteur gauche n'est plus sur la ligne
+
+            }else if(waitUntilRightOut && waitUntilLeftOut){
+
+                conditionMet = rightOut && leftOut;
+
+            }
+ 
+            if(conditionMet){
+
+                // Alignement final si tu veux
+
+                if(waitUntilRightOut && !waitUntilLeftOut){
+
+                    MOVEMENT::turnRight(5);
+
+                }else if(!waitUntilRightOut && waitUntilLeftOut){
+
+                    MOVEMENT::turnLeft(5);
+
+                }
+ 
+                stop();
+
+            }
+
+        }
+
     }
+
+}
+
+
 
     // ===== Stop =====
     void stop(){
@@ -239,10 +296,10 @@ namespace MOVEMENT {
 
                     // Offset de ligne (si utilisé ailleurs)
                     switch(offsetMode){
-                        case LineOffsetEnum::PETIT_GAUCHE: leftSpeed  *= 0.55f; break;
-                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.10f; break;
-                        case LineOffsetEnum::PETIT_DROITE: rightSpeed *= 0.55f; break;
-                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.10f; break;
+                        case LineOffsetEnum::PETIT_GAUCHE: leftSpeed  *= 0.85f; break;
+                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.55f; break;
+                        case LineOffsetEnum::PETIT_DROITE: rightSpeed *= 0.85f; break;
+                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.55f; break;
                         case LineOffsetEnum::AUCUN: default: break;
                     }
 

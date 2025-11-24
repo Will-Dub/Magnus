@@ -7,24 +7,24 @@ namespace CHESS{
     enum class Player {NONE, WHITE, BLACK};
     enum class Erreur {AUCUN, OUTSIDE_BOARD, NO_PIECE, OTHER_PLAYER_PIECE, EATING_OWN_PIECE, INVALID_MOVE, KING_CHECK};
 
-    struct SinglePosition{
+    struct Position{
         Piece piece;
         Player player;
         bool isEmpty() { return piece == Piece::NONE; }
         void setEmpty() {piece = Piece::NONE; player = Player::NONE; }
-        void setPos(SinglePosition copy) {piece = copy.piece; player = copy.player; }
+        void setPosition(Position copy) {piece = copy.piece; player = copy.player; }
     };
 
-    struct BoardSquare {
-        int row; // 0–7
-        int col; // 0–7
-        SinglePosition pos;
+    struct Square {
+        uint8_t row; // 0–7
+        uint8_t col; // 0–7
+        Position position;
     };
 
     struct MovePieceResult {
         bool isSuccess;
         Erreur erreur;
-        int isPawnOnDest;
+        bool isPawnOnDest;
         Player player;
         void setErreur(Erreur erreurP) { isSuccess = false; erreur=erreurP; }
         void setSuccess() { isSuccess = true; erreur=Erreur::AUCUN; }
@@ -41,7 +41,7 @@ namespace CHESS{
     void switchTurn();
     Player getCurrentTurn();
     bool isKingInCheck(Player player);
-    bool isMoveValidForPiece(const BoardSquare& fromSquare, 
+    bool isMoveValidForPiece(const Square& fromSquare, 
                          int toRow, int toCol,
                          bool targetHasEnemy);
     

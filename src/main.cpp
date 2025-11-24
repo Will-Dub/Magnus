@@ -27,8 +27,19 @@ void setup() {
         delay(1000);
     }*/
 
-    /*while(true){
-        LINE::ucReadLineSensors();
+    /*CHESS_MOVEMENT::turnLeft();
+
+    while(true){
+        char value = LINE::ucReadLineSensors();
+        uint8_t bits = value & 0b00000111;
+
+        // Convert bits to string
+        String bitString;
+        for (int i = 2; i >= 0; --i) {        // from MSB to LSB of the 3 bits
+            bitString += ((bits >> i) & 1) ? '1' : '0';
+        }
+
+        LCD::print(bitString);
         delay(100);
     }*/
 }
@@ -74,6 +85,7 @@ void loop() {
     LCD::clear();
     LCD::print("EN COURS...");
     delay(1000);
+    
     // Capture move
     if (result.isPawnOnDest) 
     {
@@ -82,13 +94,16 @@ void loop() {
             CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.toColIndex, moveInput.toRowIndex);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.toColIndex, moveInput.toRowIndex);
+        delay(1000);
         pickup();
 
         CHESS_MOVEMENT::moveFromSquareToDropOff(moveInput.toColIndex, moveInput.toRowIndex);
+        delay(1000);
         place();
 
         // Move to the from square
         CHESS_MOVEMENT::moveFromDropOffToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+        delay(1000);
         pickup();
 
         // Move to the to square
@@ -96,6 +111,7 @@ void loop() {
             moveInput.fromColIndex, moveInput.fromRowIndex,
             moveInput.toColIndex,   moveInput.toRowIndex
         );
+        delay(1000);
         place();
 
         // Return
@@ -112,11 +128,13 @@ void loop() {
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
         pickup();
+        delay(1000);
 
         CHESS_MOVEMENT::moveSquareToSquare(
             moveInput.fromColIndex, moveInput.fromRowIndex,
             moveInput.toColIndex,   moveInput.toRowIndex
         );
+        delay(1000);
         place();
 
         if (isWhitePlaying)
