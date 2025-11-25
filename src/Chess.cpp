@@ -163,6 +163,7 @@ namespace CHESS
         int dCol = toCol - fromSquare.col;
 
         if (fromSquare.col == toCol && fromSquare.row == toRow) return false;
+        if (fromSquare.position.player == board[toRow][toCol].position.player) return false;
 
         switch (fromSquare.position.piece) {
         case Piece::PAWN: {
