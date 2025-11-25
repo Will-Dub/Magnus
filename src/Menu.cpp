@@ -26,6 +26,11 @@ namespace MENU {
             blinkWord("[JOUEUR]    [AI]", 0, 7, 12, 15);
             tick();
         }
+
+        if(currentHorizontalIndex % 2 == 1){
+            // AI
+            return true;
+        }
     }
 
     void waitForWinAck(){

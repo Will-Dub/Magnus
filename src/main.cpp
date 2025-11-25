@@ -88,7 +88,6 @@ void loop() {
         String errorMessage = CHESS::getErrorMessage(result.erreur);
         Serial.println(errorMessage);
         isPreviousMoveInvalid = true;
-        delay(5000);
         return;
     }
 
@@ -140,7 +139,7 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
     if (move.isPawnOnDest) 
     {
         // Collect the pice and drop it off
-        if (isWhitePlaying || isGameVSAi)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromWhiteToSquare(move.toCol, move.toRow);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(move.toCol, move.toRow);
@@ -165,7 +164,7 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
         place();
 
         // Return
-        if (isWhitePlaying || isGameVSAi)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromSquareToBlack(move.toCol, move.toRow);
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(move.toCol, move.toRow);
@@ -173,7 +172,7 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
     // Normal move
     else 
     {
-        if (isWhitePlaying || isGameVSAi)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromWhiteToSquare(move.fromCol, move.fromRow);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(move.fromCol, move.fromRow);
@@ -187,7 +186,7 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
         delay(1000);
         place();
 
-        if (isWhitePlaying || isGameVSAi)
+        if (isWhitePlaying)
             CHESS_MOVEMENT::moveFromSquareToBlack(move.toCol, move.toRow);
         else
             CHESS_MOVEMENT::moveFromSquareToWhite(move.toCol, move.toRow);

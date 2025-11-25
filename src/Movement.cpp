@@ -292,9 +292,9 @@ namespace MOVEMENT {
                     // Offset de ligne (si utilisé ailleurs)
                     switch(offsetMode){
                         case LineOffsetEnum::PETIT_GAUCHE: leftSpeed  *= 0.85f; break;
-                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.55f; break;
+                        case LineOffsetEnum::GRAND_GAUCHE: leftSpeed  *= 0.65f; break;
                         case LineOffsetEnum::PETIT_DROITE: rightSpeed *= 0.85f; break;
-                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.55f; break;
+                        case LineOffsetEnum::GRAND_DROITE: rightSpeed *= 0.65f; break;
                         case LineOffsetEnum::AUCUN: default: break;
                     }
 

@@ -7,7 +7,7 @@
 #define RIGHT_SENSOR_PIN A5
 
 namespace LINE{
-    constexpr int WHITE_THRESHOLD = 960;
+    constexpr int WHITE_THRESHOLD = 920;
 
     void vSetupLineSensors();
     unsigned char ucReadLineSensors();
