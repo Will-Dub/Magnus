@@ -208,7 +208,7 @@ namespace CHESS
                 return isPathClear(FROM_ROW, FROM_COL, toRow, toCol);
             return false;
 
-        case Piece::KING:
+        case Piece::KING: 
             if (abs(dRow) <= 1 && abs(dCol) <= 1)
                 return true;
             return false;

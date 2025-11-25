@@ -23,7 +23,7 @@ namespace MENU {
         LCD::print("Commencer");
 
         while (!isOkPressedFlag) {
-            blinkWord("[JOUEUR]    [AI]", 0, 7, 12, 15);
+            blinkWord("[JOUEUR]    [IA]", 0, 7, 12, 15);
             tick();
         }
 
@@ -31,6 +31,8 @@ namespace MENU {
             // AI
             return true;
         }
+
+        return false;
     }
 
     void waitForWinAck(){
