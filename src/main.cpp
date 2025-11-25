@@ -51,7 +51,7 @@ void setup() {
 
 void loop() {
     if (!isGameStarted) {
-        isGameVSAi = MENU::waitForGameStart();
+        isGameVSAi = true;
         isGameStarted = true;
     }
 
@@ -59,26 +59,16 @@ void loop() {
     CHESS::printBoard();
     CHESS::printCurrentPlayer();
 
-    bool isRobotTurn = false;
-    isRobotTurn = isGameVSAi && CHESS::getCurrentTurn() == CHESS::Player::BLACK;
-
     CHESS::MovePieceResult result;
-    if(isRobotTurn){
-        LCD::clear();
-        LCD::print("TOUR DU ROBOT...");
-        result = getRobotMove();
-    }else{
-        result = getPlayerMove();
-    }
+    result = getRobotMove();
 
     // Vérifie si la partie est perdu
     if(result.isGameLost){
         isGameStarted = false;
         isPreviousMoveInvalid = false;
-
-        if(isRobotTurn){
-            MENU::waitForWinAck();
-        }
+        LCD::clear();
+        LCD::print("PERDU");
+        delay(1000000);
 
         return;
     }
