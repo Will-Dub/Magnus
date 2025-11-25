@@ -14,7 +14,7 @@ namespace CHESS
 
         for (int r = 0; r < 8; ++r)
             for (int c = 0; c < 8; ++c)
-                board[r][c] = { r, c, { Piece::NONE, Player::NONE } };
+                board[r][c] = { (uint8_t)r, (uint8_t)c, { Piece::NONE, Player::NONE } };
 
         // Pawns
         for (int c = 0; c < 8; ++c) {
@@ -60,6 +60,7 @@ namespace CHESS
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow){
         MovePieceResult result {};
         result.player = currentTurnPlayer;
+        result.isGameLost = false;
 
         // Affiche le move entré
         char selectedFromColChar = 'A' + fromCol;
@@ -72,7 +73,7 @@ namespace CHESS
         Serial.println(textMove);
 
         // Check if the index are in the 0-7 range
-        if(!isInsideBoard(fromRow, fromCol) || !isInsideBoard(toRow, toCol)){
+        if(!isInsideBoard(fromCol, fromRow) || !isInsideBoard(toCol, toRow)){
             result.setErreur(Erreur::OUTSIDE_BOARD);
             return result;
         }
@@ -100,7 +101,7 @@ namespace CHESS
         }
 
         // Check spécifique pour le type de pion
-        if(!isMoveValidForPiece(board[fromRow][fromCol], toRow, toCol, !toPosition.isEmpty())){
+        if(!isMoveValidForPiece(board[fromRow][fromCol], toCol, toRow, !toPosition.isEmpty())){
             result.setErreur(Erreur::INVALID_MOVE);
             return result;
         }
@@ -109,13 +110,13 @@ namespace CHESS
         Position savedFrom = fromPosition;
         Position savedTo = toPosition;
 
-        // Exécute temporairement
+        // Exécute le mouvement
         board[fromRow][fromCol].position.setEmpty();
         board[toRow][toCol].position.setPosition(savedFrom);
 
         // Vérifie si le roi est échec
         if (isKingInCheck(currentTurnPlayer)) {
-            // Restore
+            // Restore avant le mouvement
             board[fromRow][fromCol].position.setPosition(savedFrom);
             board[toRow][toCol].position = savedTo;
 
@@ -126,6 +127,10 @@ namespace CHESS
         switchTurn();
         result.setSuccess();
         result.isPawnOnDest = isPawnOnDest;
+        result.fromCol = fromCol;
+        result.fromRow = fromRow;
+        result.toCol = toCol;
+        result.toRow = toRow;
         return result;
     }
 
@@ -148,7 +153,7 @@ namespace CHESS
     }
 
     bool isMoveValidForPiece(const Square& fromSquare, 
-                         int toRow, int toCol,
+                         int toCol, int toRow,
                          bool targetHasEnemy)
     {
         const int FROM_ROW = fromSquare.row;
@@ -235,7 +240,7 @@ namespace CHESS
                 {
                     bool targetHasEnemy = true;
 
-                    if (isMoveValidForPiece(board[r][c], kingRow, kingCol, targetHasEnemy))
+                    if (isMoveValidForPiece(board[r][c], kingCol, kingRow, targetHasEnemy))
                     {
                         return true;
                     }
@@ -249,12 +254,12 @@ namespace CHESS
     /**
      * @brief Check if a piece is in the board
      * 
-     * @param row row to check
      * @param col col to check
+     * @param row row to check
      * @return true if the position is valid
      * @return false if the position is invalid
      */
-    bool isInsideBoard(int row, int col) {
+    bool isInsideBoard(int col, int row) {
         return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
@@ -388,4 +393,192 @@ namespace CHESS
     Player getCurrentTurn(){
         return currentTurnPlayer;
     }
+
+    int pieceValue(Piece p) {
+        switch (p) {
+            case Piece::PAWN:   return 100;
+            case Piece::KNIGHT: return 320;
+            case Piece::BISHOP: return 330;
+            case Piece::ROOK:   return 500;
+            case Piece::QUEEN:  return 900;
+            case Piece::KING:   return 20000;
+            default: return 0;
+        }
+    }
+
+    /**
+     * Évalue qui à l'avantage
+     */
+    int evaluateBoard() {
+        int score = 0;
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Position pos = board[r][c].position;
+                if (!pos.isEmpty()) {
+                    int val = pieceValue(pos.piece);
+                    if(pos.player == Player::WHITE){
+                        score += val;
+                    }else{
+                        score -= val;
+                    }
+                }
+            }
+        }
+        return score;
+    }
+
+    /**
+     * Génère la liste des mouvements
+     */
+    int generateMoves(Player player, MinimaxMove moveList[]) {
+        int count = 0;
+
+        // Pour les 32 carré
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Position pos = board[r][c].position;
+
+                if (pos.isEmpty() || pos.player != player)
+                    continue;
+
+                // Essaie tous les mouvement possible
+                for (int tr = 0; tr < 8; tr++) {
+                    for (int tc = 0; tc < 8; tc++) {
+                        Position target = board[tr][tc].position;
+                        bool targetHasEnemy = !target.isEmpty() && target.player != player;
+
+                        if (!isMoveValidForPiece(board[r][c], tc, tr, targetHasEnemy))
+                            continue;
+
+                        // Simule
+                        Position savedFrom = pos;
+                        Position savedTo = target;
+
+                        board[r][c].position.setEmpty();
+                        board[tr][tc].position = savedFrom;
+
+                        bool illegal = isKingInCheck(player);
+
+                        // Revert
+                        board[r][c].position = savedFrom;
+                        board[tr][tc].position = savedTo;
+
+                        if (!illegal) {
+                            moveList[count].fromRow = r;
+                            moveList[count].fromCol = c;
+                            moveList[count].toRow = tr;
+                            moveList[count].toCol = tc;
+                            count++;
+
+                            if (count >= MAX_MOVES)
+                                return count;
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Fonction minimax pour évaluer une branche
+     */
+    int minimax(int depth, int alpha, int beta, Player player) {
+        if (depth == 0)
+            return evaluateBoard();
+
+        MinimaxMove moves[MAX_MOVES];
+        int moveCount = generateMoves(player, moves);
+
+        if (moveCount == 0)
+            return evaluateBoard();
+
+        bool maximizing = (player == Player::WHITE);
+        int bestScore = maximizing ? -30000 : 30000;
+
+        for (int i = 0; i < moveCount; i++) {
+            MinimaxMove m = moves[i];
+
+            // Simule
+            Position savedFrom = board[m.fromRow][m.fromCol].position;
+            Position savedTo = board[m.toRow][m.toCol].position;
+
+            board[m.fromRow][m.fromCol].position.setEmpty();
+            board[m.toRow][m.toCol].position = savedFrom;
+
+            int score = minimax(
+                depth - 1,
+                alpha,
+                beta,
+                (player == Player::WHITE ? Player::BLACK : Player::WHITE)
+            );
+
+            // Revert
+            board[m.fromRow][m.fromCol].position = savedFrom;
+            board[m.toRow][m.toCol].position = savedTo;
+
+            if (maximizing) {
+                if (score > bestScore) bestScore = score;
+                if (score > alpha) alpha = score;
+            } else {
+                if (score < bestScore) bestScore = score;
+                if (score < beta) beta = score;
+            }
+
+            if (beta <= alpha)
+                break;
+        }
+
+        return bestScore;
+    }
+
+    /** 
+     * Retourne le meilleur mouvement
+     */
+    MinimaxMove findBestMove(int depth) {
+        Player player = currentTurnPlayer;
+
+        MinimaxMove moves[MAX_MOVES];
+        int moveCount = generateMoves(player, moves);
+
+        MinimaxMove bestMove;
+        bestMove.score = (player == Player::WHITE ? -30000 : 30000);
+
+        bool maximizing = (player == Player::WHITE);
+
+        for (int i = 0; i < moveCount; i++) {
+            MinimaxMove m = moves[i];
+
+            // Simule
+            Position savedFrom = board[m.fromRow][m.fromCol].position;
+            Position savedTo = board[m.toRow][m.toCol].position;
+
+            board[m.fromRow][m.fromCol].position.setEmpty();
+            board[m.toRow][m.toCol].position = savedFrom;
+
+            int score = minimax(
+                depth - 1,
+                -30000,
+                30000,
+                (player == Player::WHITE ? Player::BLACK : Player::WHITE)
+            );
+
+            // Revert
+            board[m.fromRow][m.fromCol].position = savedFrom;
+            board[m.toRow][m.toCol].position = savedTo;
+
+            if (maximizing && score > bestMove.score) {
+                bestMove = m;
+                bestMove.score = score;
+            }
+
+            if (!maximizing && score < bestMove.score) {
+                bestMove = m;
+                bestMove.score = score;
+            }
+        }
+
+        return bestMove;
+    }
 }
+

@@ -22,18 +22,29 @@ namespace CHESS{
     };
 
     struct MovePieceResult {
+        int fromCol, fromRow;
+        int toCol, toRow;
         bool isSuccess;
         Erreur erreur;
         bool isPawnOnDest;
         Player player;
+        bool isGameLost;
         void setErreur(Erreur erreurP) { isSuccess = false; erreur=erreurP; }
         void setSuccess() { isSuccess = true; erreur=Erreur::AUCUN; }
     };
 
+    struct MinimaxMove {
+        int fromRow, fromCol;
+        int toRow, toCol;
+        int score;
+    };
+
+    const int MAX_MOVES = 256;
+
     // La colonne est une lettre entre A-H et row entre 1-8
     MovePieceResult movePiece(int fromCol, int fromRow, int toCol, int toRow);
     void setupBoard();
-    bool isInsideBoard(int row, int col);
+    bool isInsideBoard(int col, int row);
     void printBoard();
     void printPiece(int col, int row);
     void printCurrentPlayer();
@@ -42,7 +53,11 @@ namespace CHESS{
     Player getCurrentTurn();
     bool isKingInCheck(Player player);
     bool isMoveValidForPiece(const Square& fromSquare, 
-                         int toRow, int toCol,
+                         int toCol, int toRow,
                          bool targetHasEnemy);
-    
+    int pieceValue(Piece p);
+    int evaluateBoard();
+    int generateMoves(Player player, MinimaxMove moveList[]);
+    int minimax(int depth, int alpha, int beta, Player player);
+    MinimaxMove findBestMove(int depth);
 }

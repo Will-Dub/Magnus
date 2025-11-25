@@ -17,10 +17,21 @@ namespace MENU {
         pinMode(PIN_LEFT_BUTTON, INPUT);
     }
 
-    void waitForGameStart() {
+    bool waitForGameStart() {
         // Dialogue: Commencer
         reset();
         LCD::print("Commencer");
+
+        while (!isOkPressedFlag) {
+            blinkWord("[JOUEUR]    [AI]", 0, 7, 12, 15);
+            tick();
+        }
+    }
+
+    void waitForWinAck(){
+        // Dialogue: Gagner
+        reset();
+        LCD::print("Gagner :)");
 
         while (!isOkPressedFlag) {
             blinkLine("      [OK]      ");

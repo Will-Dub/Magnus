@@ -20,9 +20,10 @@ namespace MENU {
     const int PIN_LEFT_BUTTON = 48;
 
     void init();
-    void waitForGameStart();
+    bool waitForGameStart();
     MoveInput getUserMove(bool isPreviousMoveInvalid, bool isWhitePlaying);
     void waitForLoseAck();
+    void waitForWinAck();
     void tick();
     void reset();
     void blinkWord(String text, unsigned int startWord1, unsigned int endWord1,

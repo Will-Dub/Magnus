@@ -7,7 +7,12 @@
 #include "ArmMagnetControl.h"
 
 bool isGameStarted = false;
+bool isGameVSAi = false;
 bool isPreviousMoveInvalid = false;
+
+CHESS::MovePieceResult getPlayerMove();
+CHESS::MovePieceResult getRobotMove();
+void executeMoveOnBoard(CHESS::MovePieceResult move);
 
 //-----------------------------
 // MAIN CODE.
@@ -28,7 +33,7 @@ void setup() {
     }*/
 
     /*CHESS_MOVEMENT::turnLeft();
-
+    
     while(true){
         char value = LINE::ucReadLineSensors();
         uint8_t bits = value & 0b00000111;
@@ -46,7 +51,7 @@ void setup() {
 
 void loop() {
     if (!isGameStarted) {
-        MENU::waitForGameStart();
+        isGameVSAi = MENU::waitForGameStart();
         isGameStarted = true;
     }
 
@@ -54,94 +59,137 @@ void loop() {
     CHESS::printBoard();
     CHESS::printCurrentPlayer();
 
-    // Get the user move
-    bool isWhitePlaying = CHESS::getCurrentTurn() == CHESS::Player::WHITE;
-    MENU::MoveInput moveInput = MENU::getUserMove(isPreviousMoveInvalid, isWhitePlaying);
+    bool isRobotTurn = false;
+    isRobotTurn = isGameVSAi && CHESS::getCurrentTurn() == CHESS::Player::BLACK;
 
-    // Execute the move
-    if(moveInput.giveUp){
+    CHESS::MovePieceResult result;
+    if(isRobotTurn){
+        LCD::clear();
+        LCD::print("TOUR DU ROBOT...");
+        result = getRobotMove();
+    }else{
+        result = getPlayerMove();
+    }
+
+    // Vérifie si la partie est perdu
+    if(result.isGameLost){
         isGameStarted = false;
         isPreviousMoveInvalid = false;
-        MENU::waitForLoseAck();
 
-        if(!isWhitePlaying){
-            CHESS_MOVEMENT::moveFromBlackToWhite();
+        if(isRobotTurn){
+            MENU::waitForWinAck();
         }
 
         return;
     }
-
-    CHESS::MovePieceResult result = CHESS::movePiece(moveInput.fromColIndex, moveInput.fromRowIndex, moveInput.toColIndex, moveInput.toRowIndex);
 
     // Check if the move is invalid
     if(!result.isSuccess){
         String errorMessage = CHESS::getErrorMessage(result.erreur);
         Serial.println(errorMessage);
         isPreviousMoveInvalid = true;
+        delay(5000);
         return;
     }
 
     // Execute the move physically
     LCD::clear();
     LCD::print("EN COURS...");
-    delay(1000);
+    executeMoveOnBoard(result);
     
+    isPreviousMoveInvalid = false;
+}
+
+CHESS::MovePieceResult getPlayerMove(){
+    // Get the user move
+    bool isWhitePlaying = CHESS::getCurrentTurn() == CHESS::Player::WHITE;
+    MENU::MoveInput moveInput = MENU::getUserMove(isPreviousMoveInvalid, isWhitePlaying);
+
+    // Execute the move
+    if(moveInput.giveUp){
+        MENU::waitForLoseAck();
+
+        if(!isWhitePlaying){
+            CHESS_MOVEMENT::moveFromBlackToWhite();
+        }
+
+        CHESS::MovePieceResult result;
+        result.isGameLost = true;
+
+        return result;
+    }
+
+    return CHESS::movePiece(moveInput.fromColIndex, moveInput.fromRowIndex, moveInput.toColIndex, moveInput.toRowIndex);
+}
+
+CHESS::MovePieceResult getRobotMove(){
+    CHESS::MinimaxMove minimaxMove = CHESS::findBestMove(2);
+
+    CHESS::MovePieceResult result;
+    result = CHESS::movePiece(minimaxMove.fromCol, minimaxMove.fromRow, minimaxMove.toCol, minimaxMove.toRow);
+    
+    result.isGameLost = !result.isSuccess;
+
+    return result;
+}
+
+void executeMoveOnBoard(CHESS::MovePieceResult move){
+    bool isWhitePlaying = move.player == CHESS::Player::WHITE;
+
     // Capture move
-    if (result.isPawnOnDest) 
+    if (move.isPawnOnDest) 
     {
         // Collect the pice and drop it off
-        if (isWhitePlaying)
-            CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.toColIndex, moveInput.toRowIndex);
+        if (isWhitePlaying || isGameVSAi)
+            CHESS_MOVEMENT::moveFromWhiteToSquare(move.toCol, move.toRow);
         else
-            CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.toColIndex, moveInput.toRowIndex);
+            CHESS_MOVEMENT::moveFromBlackToSquare(move.toCol, move.toRow);
         delay(1000);
         pickup();
 
-        CHESS_MOVEMENT::moveFromSquareToDropOff(moveInput.toColIndex, moveInput.toRowIndex);
+        CHESS_MOVEMENT::moveFromSquareToDropOff(move.toCol, move.toRow);
         delay(1000);
         place();
 
         // Move to the from square
-        CHESS_MOVEMENT::moveFromDropOffToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+        CHESS_MOVEMENT::moveFromDropOffToSquare(move.fromCol, move.fromRow);
         delay(1000);
         pickup();
 
         // Move to the to square
         CHESS_MOVEMENT::moveSquareToSquare(
-            moveInput.fromColIndex, moveInput.fromRowIndex,
-            moveInput.toColIndex,   moveInput.toRowIndex
+            move.fromCol, move.fromRow,
+            move.toCol, move.toRow
         );
         delay(1000);
         place();
 
         // Return
-        if (isWhitePlaying)
-            CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
+        if (isWhitePlaying || isGameVSAi)
+            CHESS_MOVEMENT::moveFromSquareToBlack(move.toCol, move.toRow);
         else
-            CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
+            CHESS_MOVEMENT::moveFromSquareToWhite(move.toCol, move.toRow);
     }
     // Normal move
     else 
     {
-        if (isWhitePlaying)
-            CHESS_MOVEMENT::moveFromWhiteToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+        if (isWhitePlaying || isGameVSAi)
+            CHESS_MOVEMENT::moveFromWhiteToSquare(move.fromCol, move.fromRow);
         else
-            CHESS_MOVEMENT::moveFromBlackToSquare(moveInput.fromColIndex, moveInput.fromRowIndex);
+            CHESS_MOVEMENT::moveFromBlackToSquare(move.fromCol, move.fromRow);
         pickup();
         delay(1000);
 
         CHESS_MOVEMENT::moveSquareToSquare(
-            moveInput.fromColIndex, moveInput.fromRowIndex,
-            moveInput.toColIndex,   moveInput.toRowIndex
+            move.fromCol, move.fromRow,
+            move.toCol,   move.toRow
         );
         delay(1000);
         place();
 
-        if (isWhitePlaying)
-            CHESS_MOVEMENT::moveFromSquareToBlack(moveInput.toColIndex, moveInput.toRowIndex);
+        if (isWhitePlaying || isGameVSAi)
+            CHESS_MOVEMENT::moveFromSquareToBlack(move.toCol, move.toRow);
         else
-            CHESS_MOVEMENT::moveFromSquareToWhite(moveInput.toColIndex, moveInput.toRowIndex);
+            CHESS_MOVEMENT::moveFromSquareToWhite(move.toCol, move.toRow);
     }
-    
-    isPreviousMoveInvalid = false;
 }
