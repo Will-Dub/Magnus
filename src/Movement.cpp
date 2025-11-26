@@ -110,99 +110,60 @@ namespace MOVEMENT {
     }
 
     void waitUntilLine(bool waitUntilRightOut, bool waitUntilLeftOut){
+        int linePoolCount = 0;
+        bool hasSeenLine = false;
+    
+        while(currentMove != MoveEnum::NONE){
+            runMovementController();
 
-    int linePoolCount = 0;
+            delay(2);
+            unsigned char lineState = LINE::ucReadLineSensors();
+            bool onAnyLine = (lineState != 0);
+            bool rightOn   = (lineState & 0x01);
+            bool leftOn    = (lineState & 0x04);
+            bool rightOut = !rightOn;
+            bool leftOut  = !leftOn;
+    
+            if(!waitUntilRightOut && !waitUntilLeftOut){
+                if(onAnyLine){
+                    linePoolCount++;
+                    if(linePoolCount >= 3){
+                        stop();
+                    }
+                }else{
+                    linePoolCount = 0;
+                }
 
-    bool hasSeenLine = false;  // a-t-on déjà vu de la ligne ?
- 
-    while(currentMove != MoveEnum::NONE){
-
-        runMovementController();
-
-        delay(2);
- 
-        unsigned char lineState = LINE::ucReadLineSensors();
- 
-        bool onAnyLine = (lineState != 0);
-
-        bool rightOn   = (lineState & 0x01);
-
-        bool leftOn    = (lineState & 0x04);
- 
-        bool rightOut = !rightOn;
-
-        bool leftOut  = !leftOn;
- 
-        // Mode "simple" : on arrête dès qu'on voit de la ligne un certain nb de fois
-
-        if(!waitUntilRightOut && !waitUntilLeftOut){
-
+                continue;
+            }
+    
             if(onAnyLine){
-
-                linePoolCount++;
-
-                if(linePoolCount >= 3){
-
-                    stop();
-
-                }
-
-            }else{
-
-                linePoolCount = 0;
-
+                hasSeenLine = true;
             }
 
-            continue;
-
-        }
- 
-        // Mode "waitUntilRightOut / LeftOut"
-
-        if(onAnyLine){
-
-            hasSeenLine = true; // on est passé sur la ligne au moins une fois
-
-        }
- 
-        // On ne teste la sortie que si on a DÉJÀ vu la ligne
-
-        if(hasSeenLine){
-
-            bool conditionMet = false;
- 
-            if(waitUntilRightOut && !waitUntilLeftOut){
-
-                conditionMet = rightOut;       // capteur droit n'est plus sur la ligne
-
-            }else if(!waitUntilRightOut && waitUntilLeftOut){
-
-                conditionMet = leftOut;        // capteur gauche n'est plus sur la ligne
-
-            }else if(waitUntilRightOut && waitUntilLeftOut){
-
-                conditionMet = rightOut && leftOut;
-
-            }
- 
-            if(conditionMet){
-                // Alignement final si tu veux
-
+            if(hasSeenLine){
+                bool conditionMet = false;
+    
                 if(waitUntilRightOut && !waitUntilLeftOut){
-                    MOVEMENT::turnRight(13);
+                    conditionMet = rightOut;
                 }else if(!waitUntilRightOut && waitUntilLeftOut){
-                    MOVEMENT::turnLeft(13);
+                    conditionMet = leftOut;
+                }else if(waitUntilRightOut && waitUntilLeftOut){
+                    conditionMet = rightOut && leftOut;
                 }
- 
-                stop();
-
+    
+                if(conditionMet){
+                    if(waitUntilRightOut && !waitUntilLeftOut){
+                        MOVEMENT::turnRight(15);
+                    }else if(!waitUntilRightOut && waitUntilLeftOut){
+                        MOVEMENT::turnLeft(15);
+                    }
+    
+                    stop();
+                }
             }
-
         }
-
     }
-
-}
 
 
 
