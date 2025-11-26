@@ -280,9 +280,9 @@ namespace CHESS_MOVEMENT{
                 offLineCounter = 0;
                 detectedLines++;
                 oldWasOnAllLine = true;
-                MOVEMENT::stop();
-                delay(250);
-                MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
+                //MOVEMENT::stop();
+                //delay(250);
+                //MOVEMENT::moveForwardNonBlocking(MAX_MOVE_DISTANCE);
             }
 
             if(detectedLines >= nbLine){

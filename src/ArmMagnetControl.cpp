@@ -35,6 +35,32 @@ void armUp(){
     SERVO_SetAngle(ARM_ID,ANGLE_HIGH);
 }
 
+void armDownShake(){
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-SMALL_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-BIG_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-SMALL_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-BIG_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-SMALL_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-BIG_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-SMALL_SHAKE_OFFSET);
+    delay(500);
+    armReset();
+    SERVO_SetAngle(ARM_ID,ANGLE_LOW-BIG_SHAKE_OFFSET);
+}
+
 //=============partie aimant==========
 
 //allume l'aimant
@@ -51,16 +77,20 @@ void magnetOff(){
 
 //ramasse une pièce
 void pickup(){
-    armDown();
     magnetOn();
+    armDown();
     delay(MAG_DELAY);
     armUp();
+    delay(1000);
 }
 
 //dépose une pièce
 void place(){
     armDown();
+    delay(1000);
     magnetOff();
     delay(MAG_DELAY);
+    //armDownShake();
     armUp();
+    delay(1000);
 }
