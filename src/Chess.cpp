@@ -162,6 +162,7 @@ namespace CHESS
         int dRow = toRow - fromSquare.row;
         int dCol = toCol - fromSquare.col;
 
+        if (fromSquare.position.player == board[toRow][toCol].position.player) return false;
         if (fromSquare.col == toCol && fromSquare.row == toRow) return false;
 
         switch (fromSquare.position.piece) {
@@ -208,7 +209,7 @@ namespace CHESS
                 return isPathClear(FROM_ROW, FROM_COL, toRow, toCol);
             return false;
 
-        case Piece::KING:
+        case Piece::KING: 
             if (abs(dRow) <= 1 && abs(dCol) <= 1)
                 return true;
             return false;

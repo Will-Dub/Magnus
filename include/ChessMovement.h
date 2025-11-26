@@ -6,8 +6,8 @@
 namespace CHESS_MOVEMENT
 {
     const float MAX_MOVE_DISTANCE = 99999;
-    const float ROBUS_RADIUS_CM = 19.5f/2;
-    const int MIN_DETECTED_LINE_READ_COUNT = 2;
+    const float ROBUS_RADIUS_CM = 23.0f/2;
+    const int MIN_DETECTED_LINE_READ_COUNT = 1;
     const int MIN_OFF_LINE_BEFORE_NEXT = 45;
     const int TURN_ANGLE = 70;
     const int FULL_TURN_ANGLE = 155;

@@ -2,6 +2,14 @@
 #include <Arduino.h>
 
 namespace LINE{
+    static float lineError      = 0.0f;
+    static float lastLineError  = 0.0f;
+    static float lineIntegral   = 0.0f;
+    static unsigned long lastTimeLine = 0;
+ 
+    static constexpr float kpLine = 0.8f;
+    static constexpr float kiLine = 0.0f;
+    static constexpr float kdLine = 0.4f;
 
     void vSetupLineSensors()
     {
@@ -37,50 +45,63 @@ namespace LINE{
     void vCourseCorrection()
     {
         unsigned char ucSensorState = ucReadLineSensors();
+    
+        // Convertie
+        int e = 0;
         switch (ucSensorState) {
+            case 0b100: // gauche
+                e = +2;
+                break;
+            case 0b110: // gauche + milieu
+                e = +1;
+                break;
+            case 0b010: // milieu
+                e = 0;
+                break;
+            case 0b011: // milieu + droite
+                e = -1;
+                break;
+            case 0b001: // droite
+                e = -2;
+                break;
+            // weird shit
             case 0b000:
-                Serial.println("No line");
-                // No line
-                break; 
-            case 0b001:
-                Serial.println("Right sensor on line");
-                // Right sensor on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_DROITE);
-                break;
-            case 0b010:
-                Serial.println("Middle sensor on line");
-                // Middle sensor on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                break;
-            case 0b011:
-                Serial.println("Middle and right on line");
-                // Middle and right on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_DROITE);
-                break;
-            case 0b100:
-                Serial.println("Left sensor on line");
-                // Left sensor on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_GAUCHE);
-                break;
             case 0b101:
-                Serial.println("Left and right on line");
-                // Left and right on line
-                //IDK THATS FUCKED UP G, GO STRAIGHT I GUESS
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                break;
-            case 0b110:
-                Serial.println("Left and middle on line");
-                // Left and middle on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_GAUCHE);
-                break;
             case 0b111:
-                Serial.println("All on line");
-                // All on line
-                MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
-                break;
             default:
-                Serial.println("Error: 0_0 au secours!");
+                e = 0;
                 break;
+        }
+    
+        // PID
+        unsigned long now = millis();
+        float dt = (now - lastTimeLine) / 1000.0f;
+        if (dt <= 0.0f) dt = 0.001f;
+        lastTimeLine = now;
+    
+        lineError = (float)e;
+        lineIntegral += lineError * dt;
+        if (lineIntegral > 50.0f) lineIntegral = 50.0f;
+        if (lineIntegral < -50.0f) lineIntegral = -50.0f;
+    
+        float dError = (lineError - lastLineError) / dt;
+        lastLineError = lineError;
+    
+        float correction = kpLine * lineError
+                        + kiLine * lineIntegral
+                        + kdLine * dError;
+    
+        // Traduit en offset
+        if (correction > 1.5f) {
+            MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_GAUCHE);
+        } else if (correction > 0.5f) {
+            MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_GAUCHE);
+        } else if (correction < -1.5f) {
+            MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::GRAND_DROITE);
+        } else if (correction < -0.5f) {
+            MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::PETIT_DROITE);
+        } else {
+            MOVEMENT::setOffset(MOVEMENT::LineOffsetEnum::AUCUN);
         }
     }
 }

@@ -20,11 +20,13 @@ void executeMoveOnBoard(CHESS::MovePieceResult move);
 void setup() {
     BoardInit();
     Serial.begin(115200);
+    magSetup();
     MOVEMENT::init();
     CHESS::setupBoard();
     MENU::init();
     LCD::initLcd();
     magSetup();
+    armUp();
 
     /*while(true){
         MOVEMENT::moveForwardNonBlocking(999999);
@@ -133,16 +135,13 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
             CHESS_MOVEMENT::moveFromWhiteToSquare(move.toCol, move.toRow);
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(move.toCol, move.toRow);
-        delay(1000);
         pickup();
 
         CHESS_MOVEMENT::moveFromSquareToDropOff(move.toCol, move.toRow);
-        delay(1000);
         place();
 
         // Move to the from square
         CHESS_MOVEMENT::moveFromDropOffToSquare(move.fromCol, move.fromRow);
-        delay(1000);
         pickup();
 
         // Move to the to square
@@ -150,7 +149,6 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
             move.fromCol, move.fromRow,
             move.toCol, move.toRow
         );
-        delay(1000);
         place();
 
         // Return
@@ -167,13 +165,11 @@ void executeMoveOnBoard(CHESS::MovePieceResult move){
         else
             CHESS_MOVEMENT::moveFromBlackToSquare(move.fromCol, move.fromRow);
         pickup();
-        delay(1000);
 
         CHESS_MOVEMENT::moveSquareToSquare(
             move.fromCol, move.fromRow,
             move.toCol,   move.toRow
         );
-        delay(1000);
         place();
 
         if (isWhitePlaying)

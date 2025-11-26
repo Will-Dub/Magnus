@@ -14,7 +14,7 @@ namespace MOVEMENT {
 
     constexpr int MAX_TURNING_SPEED   = 4500;
     constexpr int MIN_TURNING_SPEED   = 1500;
-    constexpr int MAX_STRAIGHT_SPEED  = 6000;
+    constexpr int MAX_STRAIGHT_SPEED  = 5500;
     constexpr int MIN_STRAIGHT_SPEED  = 1000;
 
     enum MoveEnum { FORWARD, TURN_LEFT, TURN_RIGHT, NONE };
