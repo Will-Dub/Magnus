@@ -6,7 +6,7 @@ const int MAGNET_PIN = 37;
 const int ARM_ID = 1;
 //angles du servo moteur pour les positions
 const int ANGLE_HIGH = 0;
-const int ANGLE_LOW = 66;
+const int ANGLE_LOW = 70;
 const int SMALL_SHAKE_OFFSET = 0;
 const int BIG_SHAKE_OFFSET = 10;
 

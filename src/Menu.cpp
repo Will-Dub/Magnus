@@ -121,17 +121,17 @@ namespace MENU {
         }
 
         // Dialogue: À
+        int oldHorizontalIndex = currentHorizontalIndex;
+        int oldVerticalIndex = currentVerticalIndex;
         reset();
         LCD::print("A:");
         int toColIndex = 0;
         int toRowIndex = 0;
         oldColIndex = -1;
         oldRowIndex = -1;
-        
-        if(!isWhitePlaying){
-            currentHorizontalIndex = 1;
-            currentVerticalIndex = 1;
-        }
+
+        currentHorizontalIndex = oldHorizontalIndex;
+        currentVerticalIndex = oldVerticalIndex;
 
         while(!isOkPressedFlag){
             // Met à jour col ou row
