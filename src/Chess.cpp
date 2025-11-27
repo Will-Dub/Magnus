@@ -419,6 +419,15 @@ namespace CHESS
                 Position pos = board[r][c].position;
                 if (!pos.isEmpty()) {
                     int val = pieceValue(pos.piece);
+
+                    if(pos.piece == Piece::PAWN){
+                        if(pos.player == Player::WHITE){
+                            val += r*5;
+                        }else{
+                            val += (7-r) * 5;
+                        }
+                    }
+
                     if(pos.player == Player::WHITE){
                         score += val;
                     }else{

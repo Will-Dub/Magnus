@@ -15,12 +15,6 @@ namespace CHESS{
         void setPosition(Position copy) {piece = copy.piece; player = copy.player; }
     };
 
-    struct Square {
-        uint8_t row; // 0–7
-        uint8_t col; // 0–7
-        Position position;
-    };
-
     struct MovePieceResult {
         int fromCol, fromRow;
         int toCol, toRow;
